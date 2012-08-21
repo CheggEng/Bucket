@@ -59,10 +59,12 @@ var jStore = jStore || {};
                 }.bind(this);
 
                 db.onerror = function (e) {
-                    this.fireEvent('Error', {'error':e});
-                }
+                    logger.log('onerror:', e);
+                    this.fireEvent('Error', {'error':e})
+                }.bind(this);
 
             } catch (e) {
+                logger.log('_openDB catch:', e);
                 this.fireEvent('Error', {'error':e});
             }
         },

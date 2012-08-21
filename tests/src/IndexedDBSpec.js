@@ -1,6 +1,5 @@
 describe("IndexedDB", function () {
-    var
-        db_name = 'Chegg',
+    var db_name = 'Chegg',
         table_name = "test",
         prefix = db_name + '_' + table_name + '_',
         driver_const = jStore.drivers['IndexedDB'],
@@ -35,8 +34,8 @@ describe("IndexedDB", function () {
 
         tests.setValues = function (values, cb) {
             var data, req, trans, store, key;
-            trans = driver.db.transaction([this.table_name], "readwrite");
-            store = trans.objectStore(this.table_name);
+            trans = driver.db.transaction([table_name], "readwrite");
+            store = trans.objectStore(table_name);
 
             try {
 
@@ -56,7 +55,7 @@ describe("IndexedDB", function () {
 
                 cb && cb(null);
             } catch (e) {
-                this.fireEvent('Error', {'error':e});
+                //this.fireEvent('Error', {'error':e});
                 cb && cb(e);
             }
         };
