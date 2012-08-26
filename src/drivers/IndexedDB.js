@@ -1,193 +1,322 @@
 var jStore = jStore || {};
 
 !function (ns, utils) {
-    /**
-     * This driver is the implementation of IndexedDB store mechanism,
-     * Since we want the driver to support teh same API we will store the data in the IndexedDB in a way
-     * that we will be able to swap drivers very easily.
-     *
-     * In order to do so we simply store the data in 2 fields:
-     *  key
-     *  value
-     *
-     * @module Driver.IndexedDB
-     */
 
     var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.DEBUG),
-        dbVersion = '1.0',
-        driver;
+        driver,
+        db_version = 1;
 
+    /**
+     * @module Driver.IndexedDB
+     *
+     *
+     * @constructor
+     * @class IndexedDB
+     * @extends Driver
+     */
     driver = jStore.registerDriver('IndexedDB', {
+        name: 'IndexedDB',
 
-        // The reference to the database
-        db:undefined,
-
-        name:'IndexedDB',
-
-        /**
-         * Open the Database
-         * @private
-         */
-        _openDB:function () {
-            logger.log('_openDB');
-            var db, req, store, i, field;
-
-            try {
-
-                db = indexedDB.open(this.db_name)
-                // since the IndedDB is async we need to wait
-                db.onsuccess = function (e) {
-
-                    // We have succeed to open the DB - keep the reference
-                    this.db = e.target.result;
-
-                    // Check to see if this is the latest version
-                    if (this.db.version == dbVersion) {
-                        this.fireEvent('dbopen', {db:this.db});
-                        return;
-                    }
-
-                    // Upgrade to the new version
-                    req = this.db.setVersion(dbVersion);
-                    req.onsuccess = function (e) {
-                        // Create the table
-                        store = this.db.createObjectStore(this.table_name, {'keyPath':'key'});
-                        store.createIndex("key", "key", {unique:false});
-
-                        this.fireEvent('dbopen', {db:this.db});
-                    }.bind(this);
-                }.bind(this);
-
-                db.onerror = function (e) {
-                    logger.log('onerror:', e);
-                    this.fireEvent('Error', {'error':e})
-                }.bind(this);
-
-            } catch (e) {
-                logger.log('_openDB catch:', e);
-                this.fireEvent('Error', {'error':e});
-            }
+        _getIDB: function () {
+            return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
         },
 
-        init:function () {
-            logger.log('init');
-            // Reference to the indexDB
-            window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
+        _getIDBTransaction: function () {
+            return window.IDBTransaction || window.webkitIDBTransaction || window.mozIDBTransaction || window.oIDBTransaction || window.msIDBTransaction;
+        },
 
-            // This are Chrome prefix
-            if ('webkitIndexedDB' in window) {
-                window.IDBTransaction = window.webkitIDBTransaction;
-                window.IDBKeyRange = window.webkitIDBKeyRange;
-            }
+        _getIDBKeyRange: function () {
+            return window.IDBKeyRange || window.webkitIDBKeyRange || window.mozIDBKeyRange || window.oIDBKeyRange || window.msIDBKeyRange;
+        },
+
+        /**
+         *
+         * @private
+         */
+        _openDB: function () {
+            logger.log('_openDB start');
+
+            var db_req,
+                onupgradeneeded;
+
+            onupgradeneeded = function (e) {
+                var self = this, db, trans = null, store;
+
+                switch (e.type) {
+                    case 'success':
+                        db = e.currentTarget.result.db;
+                        trans = e.currentTarget.result;
+                        break;
+
+                    case 'upgradeneeded':
+                        db = e.currentTarget.result;
+                        break;
+                }
+
+                logger.log('onupgradeneeded occur, new version is: ', db.version);
+
+                if (db.objectStoreNames.length && db.objectStoreNames.contains(this.table_name)) {
+                    db.deleteObjectStore(this.table_name);
+                }
+
+                store = db.createObjectStore(this.table_name, {'keyPath': 'key'});
+                store.createIndex("key", "key", {unique: false});
+
+                if (trans !== null) {
+                    trans.oncomplete = function (e) {
+                        // fire opendb event after db is upgraded
+                        self.fireEvent('opendb');
+                    };
+                } else {
+                    // fire opendb event after db is upgraded
+                    this.fireEvent('opendb');
+                }
+            };
+
+            db_req = this._getIDB().open(this.db_name, db_version);
+            logger.log('open DB request', db_req);
+            db_req.onsuccess = function (e) {
+                logger.log('open DB request success event', e);
+                // keep db reference.
+                this.db = e.target.result;
+
+                // if the version isn't change fire opendb and break logic.
+                if (parseInt(db_version, 10) === parseInt(this.db.version || 0, 10)) {
+                    this.fireEvent('opendb');
+                    return;
+                }
+
+                logger.log('request version is higher then current, performing upgrade...');
+
+                // use older version of database onupgradeneeded (webkit)
+                if (typeof this.db.setVersion === 'function') {
+                    var version_req = this.db.setVersion(db_version);
+                    version_req.onsuccess = onupgradeneeded.bind(this);
+                    version_req.onerror = function (e) {
+                        logger.log('setVersion error event', e);
+                    };
+                    version_req.onblocked = function (e) {
+                        logger.log('setVersion blocked event', e);
+                    };
+                    logger.log('manual version upgrade for webkit', version_req);
+                }
+
+            }.bind(this);
+
+            db_req.onupgradeneeded = onupgradeneeded.bind(this);
+            db_req.onerror = function (e) {
+                logger.log('error in db request', e);
+            }.bind(this);
+        },
+
+        /**
+         *
+         * @return {*}
+         */
+        init: function () {
+            logger.log('init');
 
             // Database properties
             this.db_name = this.options.db_name;
-            this.db_size = this.options.db_size || 1024;
             this.table_name = this.options.table_name;
-            this.prefix = this.db_name + '_' + this.table_name + '_';
-            this.prefixLen = this.prefix.length;
 
-            // The database fields
-            this.fields = ["key", "value"];
-
-            // Init the internal store object
-            if (!driver.stores[this.options.table_name]) {
-                driver.stores[this.options.table_name] = {};
-            }
-
-            this.store = driver.stores[this.options.table_name];
-
-            this._openDB();
-            this.addEvent('dbopen', function () {
+            // Listen to indexedDB open request end 
+            this.addEvent('opendb:once', function () {
                 this.fireEvent('load:latched');
             }.bind(this));
+
+            // Initiate connection to the indexedDB database
+            this._openDB();
 
             return this;
         },
 
-        clear:function (callback) {
+        /**
+         *
+         * @param callback
+         * @return {*}
+         */
+        clear: function (callback) {
             logger.log('clear');
-            callback && callback(null);
+
+            var trans, store, clear_req;
+
+            trans = this.db.transaction([this.table_name], 'readwrite');
+            store = trans.objectStore(this.table_name);
+            clear_req = store.clear();
+
+            clear_req.onsuccess = function (e) {
+                logger.log('objectStore clear success event', e);
+            };
+
+            clear_req.onerror = function (e) {
+                logger.log('objectStore clear error event', e);
+            };
+
+            trans.oncomplete = function (e) {
+                logger.log('transaction complete event', e);
+                callback && callback(null);
+            };
+
+            trans.onerror = function (e) {
+                logger.log('transaction error event', e);
+                callback && callback(e);
+            };
 
             return this.$parent('clear', arguments);
         },
 
-        each:function (callback) {
+        /**
+         *
+         * @param callback
+         * @return {*}
+         */
+        each: function (callback) {
             logger.log('each');
 
-            /*
-             keys.forEach(function (key, value) {
-             callback(key, value);
-             }.bind(this));
-             */
+            this.getAll(function (error, items) {
+                var key;
+
+                if (error !== null) {
+                    callback && callback(error);
+                    return;
+                }
+
+                for (key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        callback && callback(null, key, items[key]);
+                    }
+                }
+            });
 
             return this.$parent('each', arguments);
         },
 
-        exists:function (key, callback) {
+        /**
+         *
+         * @param key
+         * @param callback
+         * @return {*}
+         */
+        exists: function (key, callback) {
             logger.log('exists');
 
-            // callback(null, exists);
+            this.get(key, function (error, value) {
+                if (error !== null) {
+                    callback && callback(error);
+                    return;
+                }
+
+                callback && callback(null, !!value);
+            });
 
             return this.$parent('exists', arguments);
         },
 
-        get:function (keys, callback) {
-            logger.log('get');
-            var i, req, data, values = [],
-                trans = this.db.transaction([this.table_name], "readonly"),
-                store = trans.objectStore(this.table_name);
+        /**
+         *
+         * @param key
+         * @param callback
+         * @return {*}
+         */
+        get: function (key, callback) {
+            logger.log('get', key);
 
-            // Check to see if we have single record or an array
-            if (!Array.isArray(keys)) {
-                data = [];
-                data.push(keys);
+            var objIsEmpty,
+                return_object = true,
+                keys = [],
+                i,
+                trans,
+                store,
+                req,
+                req_onsuccess,
+                req_onerror,
+                values = {};
+
+            trans = this.db.transaction([this.table_name], "readonly");
+            store = trans.objectStore(this.table_name);
+
+            if (typeof key === 'string' || typeof key === 'number') {
+                return_object = false;
+                keys.push(key);
             } else {
-                data = keys;
+                keys = key;
             }
 
-            // Add all records to the DB
-            for (i = 0; i < data.length; i++) {
+            req_onsuccess = function (e) {
+                if (e.target.result) {
+                    values[e.target.result.key] = JSON.parse(e.target.result.value);
+                }
+            };
 
-                req = store.get(data[i]);
-                values[data[i]] = JSON.parse(req);
+            req_onerror = function (e) {
+                callback && callback(e);
+            };
 
-                req.onerror = function (e) {
-                    callback && callback(e);
-                };
+            for (i = 0; i < keys.length; ++i) {
+                req = store.get(keys[i]);
 
-                req.onsuccess = function () {
-                    console.log(i === data.length - 1);
-                    // Check to see that we have processed all the keys
-                    i === data.length - 1 && callback && callback();
-                };
-
+                req.onerror = req_onerror;
+                req.onsuccess = req_onsuccess;
             }
+
+            objIsEmpty = function (obj) {
+                var i;
+                for (i in obj) {
+                    if (obj.hasOwnProperty(i)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            trans.oncomplete = function (e) {
+
+                if (objIsEmpty(values)) {
+                    values = null;
+                } else {
+                    if (return_object === false) {
+                        for (i in values) {
+                            if (values.hasOwnProperty(i)) {
+                                values = values[i];
+                            }
+                        }
+                    }
+                }
+                callback && callback(null, values);
+            };
+
 
             return this.$parent('get', arguments);
         },
 
-        getAll:function (callback) {
+        /**
+         *
+         * @param callback
+         * @return {*}
+         */
+        getAll: function (callback) {
             logger.log('getAll');
-            var cursor, keyRange, items = [],
+
+            var cursor, keyRange, items = {},
                 trans = this.db.transaction([this.table_name], "readonly"),
                 store = trans.objectStore(this.table_name);
-
 
             // We select the range of data we want to make queries over 
             // In this case, we get everything. 
             // To see how you set ranges, see <a href="/en/IndexedDB/IDBKeyRange" title="en/IndexedDB/IDBKeyRange">IDBKeyRange</a>.
-            keyRange = IDBKeyRange.lowerBound(0);
+            keyRange = this._getIDBKeyRange().lowerBound(0);
 
             // We open a cursor and attach events.
             cursor = store.openCursor(keyRange);
 
             cursor.onsuccess = function (e) {
                 var result = e.target.result;
-                if (!!result == false)
+                if (!result) {
                     return;
+                }
 
-                items.push(result.value);
+                items[result.key] = result.value;
                 // The success event handler is fired once for each entry.
                 // So call "continue" on your result object.
                 // This lets you iterate across the data
@@ -199,104 +328,176 @@ var jStore = jStore || {};
                 callback && callback(e);
             };
 
-            trans.oncomplete = function (evt) {
+            trans.oncomplete = function (e) {
                 callback && callback(null, items);
             };
 
             return this.$parent('getAll', arguments);
         },
 
-        getKeys:function (callback) {
+        /**
+         *
+         * @param callback
+         * @return {*}
+         */
+        getKeys: function (callback) {
             logger.log('getKeys');
 
-            // callback(null, keys);
+            this.getAll(function (error, items) {
+                var key, keys = [];
+
+                if (error !== null) {
+                    callback && callback(error);
+                    return;
+                }
+
+                for (key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        keys.push(key);
+                    }
+                }
+
+                callback && callback(null, keys);
+            });
 
             return this.$parent('getKeys', arguments);
         },
 
-        remove:function (keys, callback) {
+        /**
+         *
+         * @param key
+         * @param callback
+         * @return {*}
+         */
+        remove: function (key, callback) {
+            logger.log('remove');
 
-            var data, i, req,
-                trans = this.db.transaction([this.table_name], "readwrite"),
-                store = trans.objectStore(this.table_name)
+            var keys = [], trans, store, i, request, request_onerror, request_onsuccess;
 
-            // Check to see if we have single record or an array
-            if (!Array.isArray(keys)) {
-                data = [];
-                data.push(keys);
+            trans = this.db.transaction(this.table_name, 'readwrite');
+            store = trans.objectStore(this.table_name);
+
+            if (typeof key === 'string' || typeof key === 'number') {
+                keys.push(key);
             } else {
-                data = keys;
+                keys = key;
             }
 
-            // Add all records to the DB
-            for (i = 0; i < data.length; i++) {
+            request_onsuccess = function (e) {
+                logger.log('objectStore delete success event', e);
+            };
 
-                req = store.delete(data[i]);
-                req.onsuccess = function () {
-                    callback && callback();
-                };
-                req.onerror = function (e) {
-                    callback && callback(e);
-                };
+            request_onerror = function (e) {
+                logger.log('objectStore delete error event', e);
+            };
 
+            for (i = 0; i < keys.length; ++i) {
+                request = store.delete(key);
+                request.onsuccess = request_onsuccess;
+                request.onerror = request_onerror;
             }
+
+            trans.oncomplete = function (e) {
+                logger.log('transaction complete event', e);
+                callback && callback(null);
+            };
+
+            trans.onerror = function (e) {
+                logger.log('transaction error event', e);
+                callback && callback(e);
+            };
 
             return this.$parent('remove', arguments);
         },
 
         /**
-         * The set function in indexedDb only receive JSON as its input.
          *
-         * @param values
-         * @param undefined
+         * @param keyOrMap
+         * @param value
          * @param callback
          * @return {*}
          */
-        set:function (keyOrMap, value, callback) {
-            logger.log('set:');
+        set: function (keyOrMap, value, callback) {
+            logger.log('set', keyOrMap, value);
 
-            var data, req, trans, store, key;
-            trans = this.db.transaction([this.table_name], "readwrite");
+            var map, trans, store, key, add_req, add_req_onsuccess, add_req_onerror;
+
+            if (typeof keyOrMap === 'string' || typeof keyOrMap === 'number') {
+                map = {};
+                map[keyOrMap] = value;
+            } else {
+                map = keyOrMap;
+            }
+
+            trans = this.db.transaction([this.table_name], 'readwrite');
             store = trans.objectStore(this.table_name);
 
-            if (typeof keyOrMap == 'string' || typeof keyOrMap == 'number') {
-                data = {};
-                data[keyOrMap] = value;
-            } else {
-                data = keyOrMap;
-            }
+            // set add request events handlers so we won't generate them inside the loop
+            add_req_onsuccess = function (e) {
+                logger.log('add request success event ', e);
+            };
 
-            // Check to see if user has passed value or callback as second parameter
-            if (typeof value === "function") {
-                callback = value;
-            }
+            add_req_onerror = function (e) {
+                logger.log('add request error event ', e);
+            };
 
-            try {
-                // Add all records to the DB
-                for (key in data) {
-                    // Set the record Id
-                    req = store.put({ 'key':key, 'value':JSON.stringify(data[key])});
+            for (key in map) {
+                if (map.hasOwnProperty(key)) {
+                    add_req = store.put({
+                        'key': key,
+                        'value': JSON.stringify(map[key])
+                    });
+
+                    add_req.onsuccess = add_req_onsuccess;
+                    add_req.onerror = add_req_onerror;
                 }
-
-                callback && callback(null);
-            } catch (e) {
-                this.fireEvent('Error', {'error':e});
-                callback && callback(e);
             }
+
+            trans.oncomplete = function (e) {
+                logger.log('transaction complete event', e);
+                callback && callback(null);
+            };
+
+            trans.onerror = function (e) {
+                logger.log('transaction error event', e);
+                callback && callback(e);
+            };
 
             return this.$parent('set', arguments);
         },
 
-        test:function () {
-            return window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB;
+        /**
+         *
+         * @return {Boolean}
+         */
+        test: function () {
+            return false;
         },
 
-        getLength:function (cb) {
-            // cb(null,length);
+        /**
+         * This method return the length of all keys in the objectStore
+         * @param callback
+         * @return {*}
+         */
+        getLength: function (callback) {
+            logger.log('getLength');
+
+            var trans, store, req;
+
+            trans = this.db.transaction(this.table_name, 'readwrite');
+            store = trans.objectStore(this.table_name);
+
+            req = store.count();
+
+            req.onsuccess = function (e) {
+                callback && callback(null, parseInt(e.target.result || 0, 10));
+            };
+
+            req.onerror = function (e) {
+                callback && callback(e);
+            }
 
             return this.$parent('getLength', arguments);
         }
     });
-
-    driver.stores = {};
 }.apply(jStore, [jStore, jStore.utils]);

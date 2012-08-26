@@ -16,7 +16,11 @@
 <body>
 
 <script>
-    var driver, driver1;
+    window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.mozIDBTransaction || window.oIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.mozIDBKeyRange || window.oIDBKeyRange || window.msIDBKeyRange;
+    
+    var driver;
 
     // getDriver method
     driver = new jStore.drivers['IndexedDB']({
@@ -40,7 +44,7 @@
         }
     }
 
-    driver.addEvent('dbopen', function () {
+    driver.addEvent('load', function () {
 
         // Set Key=value
         driver.set('key', 'value', _callback);
@@ -112,12 +116,19 @@
 
         // Print all the data in the storage
         printAll();
+        driver.getLength(_callback);
 
-        driver.clear();
-
+        driver.clear(_callback);
+        
         // Print all the data in the storage
         printAll();
+        driver.getLength(_callback);
     });
+    
+    function deleteDB(){
+        driver.db.close();
+        webkitIndexedDB.deleteDatabase(driver.db_name);
+    }
 
 </script>
 

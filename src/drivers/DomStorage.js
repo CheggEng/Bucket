@@ -32,10 +32,6 @@ var jStore = jStore || {};
             // Set the prefix for this storage
             this.prefix = this.options.db_name + '_' + this.options.table_name + '_';
 
-            localStorage.clear();
-            this.store = {};
-            driver.stores[this.prefix] = {}
-
             // Init the internal store object
             if (!driver.stores[this.prefix]) {
                 driver.stores[this.prefix] = {};
@@ -47,7 +43,6 @@ var jStore = jStore || {};
             keys = Object.keys(localStorage);
             keys.forEach(function (key) {
                 if (key.indexOf(this.prefix) !== -1) {
-                    console.log(localStorage, localStorage[key]);
                     this.store[key.substr(this.prefix.length)] = JSON.parse(localStorage[key]);
                 }
             }.bind(this));

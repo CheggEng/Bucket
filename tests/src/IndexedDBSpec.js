@@ -1,9 +1,62 @@
-describe("IndexedDB", function () {
+describe('IndexedDB', function () {
     var db_name = 'Chegg',
-        table_name = "test",
-        prefix = db_name + '_' + table_name + '_',
+        table_name = 'test',
+        db_version = 2,
         driver_const = jStore.drivers['IndexedDB'],
-        driver;
+        driver,
+        openDB;
+
+    window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB;
+    window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.mozIDBTransaction || window.oIDBTransaction || window.msIDBTransaction;
+    window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.mozIDBKeyRange || window.oIDBKeyRange || window.msIDBKeyRange;
+
+    openDB = function (options) {
+        var db_req = indexedDB.open(db_name, db_version);
+
+        function onupgradeneeded(e) {
+            console.log('test onupgradeneeded', e);
+
+            var db, store;
+
+            switch (e.type) {
+                case 'success':
+                    db = e.currentTarget.result.db;
+                    break;
+
+                case 'upgradeneeded':
+                    db = e.currentTarget.result;
+                    break;
+            }
+
+            store = db.createObjectStore(this.table_name, {'keyPath': 'key'});
+            store.createIndex("key", "key", {unique: false});
+
+            options.onsuccess_cb && options.onsuccess_cb(db);
+        }
+
+        db_req.onsuccess = function (e) {
+            var db = e.target.result;
+            
+            options.onsuccess_cb && options.onsuccess_cb(db);
+            // if the version isn't change fire opendb and break logic.
+            if (parseInt(db_version, 10) === parseInt(db.version || 0, 10)) {
+                //options.onsuccess_cb && options.onsuccess_cb(db);
+                return;
+            }
+
+            // use older version of database onupgradeneeded (webkit)
+            if (typeof db.setVersion === "function") {
+                var version_req = db.setVersion(db_version);
+                version_req.onsuccess = onupgradeneeded;
+            }
+        };
+
+        db_req.onerror = function (e) {
+            console.log('test db_req error event', e);
+        };
+
+        db_req.onupgradeneeded = onupgradeneeded;
+    };
 
     beforeEach(function () {
 
@@ -11,77 +64,137 @@ describe("IndexedDB", function () {
 
         tests.getDriver = function () {
             driver = new jStore.drivers['IndexedDB']({
-                table_name:"test",
-                db_name:'Chegg'
+                table_name: table_name,
+                db_name: db_name
             });
             return driver;
         };
 
         tests.getValue = function (key, cb) {
-            var req,
-                trans = driver.db.transaction([table_name], "readonly"),
-                store = trans.objectStore(table_name);
+            console.log('tests.getValue', key);
+            openDB({
+                onsuccess_cb: function (db) {
+                    var trans, store, req;
 
-            req = store.get(key);
-            req.onsuccess = function (e) {
-                cb && cb(null, e.target.result[key]);
-            };
-            req.onerror = function (e) {
-                cb && cb(e);
-            };
+                    trans = db.transaction([table_name], "readonly");
+                    store = trans.objectStore(table_name);
+                    req = store.get(key);
 
+                    req.onerror = function (e) {
+                        cb && cb(null);
+                    };
+
+                    req.onsuccess = function (e) {
+                        cb && cb(JSON.parse(req.result.value));
+                    };
+                }
+            });
         };
 
         tests.setValues = function (values, cb) {
-            var data, req, trans, store, key;
-            trans = driver.db.transaction([table_name], "readwrite");
-            store = trans.objectStore(table_name);
+            console.log('tests.setValues', values);
+            openDB({
+                onsuccess_cb: function (db) {
+                    var trans, store, key, add_req, add_req_onsuccess, add_req_onerror;
 
-            try {
+                    trans = db.transaction([table_name], 'readwrite');
+                    store = trans.objectStore(table_name);
 
-                // Check to see if we have single record or an array
-                if (Array.isArray(values)) {
-                    data = values;
-                } else {
-                    data = {};
-                    data[keyOrMap] = value;
+                    // set add request events handlers so we won't generate them inside the loop
+                    add_req_onsuccess = function (e) {
+                        console.log('add request success event ', e);
+                    };
+
+                    add_req_onerror = function (e) {
+                        console.log('add request error event ', e);
+                    };
+
+                    for (key in values) {
+                        if (values.hasOwnProperty(key)) {
+                            add_req = store.add({
+                                'key': key,
+                                'value': JSON.stringify(values[key])
+                            });
+
+                            add_req.onsuccess = add_req_onsuccess;
+                            add_req.onerror = add_req_onerror;
+                        }
+                    }
+
+                    trans.oncomplete = function (e) {
+                        console.log('transaction complete event', e);
+                        cb();
+                    };
+
+                    trans.onerror = function (e) {
+                        console.log('transaction error event', e);
+                        cb(e);
+                    };
                 }
-
-                // Add all records to the DB
-                for (key in data) {
-                    // Set the record Id
-                    req = store.put({ 'key':key, 'value':JSON.stringify(data[key])});
-                }
-
-                cb && cb(null);
-            } catch (e) {
-                //this.fireEvent('Error', {'error':e});
-                cb && cb(e);
-            }
+            });
         };
 
         tests.exists = function (keys, cb) {
-            var i, key;
-
-            for (i = 0; key = keys[i]; i++) {
-                if (!!localStorage.getItem(prefix + key)) return cb(true);
-            }
-
-            cb && cb(false);
+            console.log('tests.exists', keys);
+            cb && cb(null);
         };
 
         tests.clear = function (cb) {
-            var i, keys = Object.keys(localStorage);
+            console.log('tests.clear');
 
-            for (i = 0; i < keys.length; i++) {
-                keys[i].indexOf(prefix) > -1 && localStorage.removeItem(keys[i]);
-            }
-            cb && cb();
-        }
+            openDB({
+                onsuccess_cb: function (db) {
+                    var cursor, keyRange, items = {},
+                        trans = db.transaction([table_name], "readonly"),
+                        store = trans.objectStore(table_name);
+
+                    // We select the range of data we want to make queries over 
+                    // In this case, we get everything. 
+                    // To see how you set ranges, see <a href="/en/IndexedDB/IDBKeyRange" title="en/IndexedDB/IDBKeyRange">IDBKeyRange</a>.
+                    keyRange = IDBKeyRange.lowerBound(0);
+
+                    // We open a cursor and attach events.
+                    cursor = store.openCursor(keyRange);
+
+                    cursor.onsuccess = function (e) {
+                        console.log(e);
+                        var result = e.target.result;
+                        if (result === null) {
+                            return;
+                        }
+
+                        items[result.key] = result.value;
+                        // The success event handler is fired once for each entry.
+                        // So call "continue" on your result object.
+                        // This lets you iterate across the data
+
+                        result.continue();
+                    };
+
+                    trans.oncomplete = function (e) {
+                        var trans, store, key, request;
+
+                        trans = db.transaction(table_name, 'readwrite');
+                        store = trans.objectStore(table_name);
+
+                        for (key in items) {
+                            request = store.delete(key);
+                        }
+
+                        trans.onerror = function (e) {
+                            cb && cb(null);
+                        };
+
+                        trans.oncomplete = function (e) {
+                            cb && cb(null);
+                        };
+                    };
+                }
+            });
+
+        };
 
         tests.clear();
-
     });
     tests.runTests();
 });
-
