@@ -1,6 +1,6 @@
 describe("DomStorage", function () {
     var prefix = "Chegg_dom_",
-        driver_const = jStore.drivers['DomStorage'],
+        driver_const = Bucket.drivers['DomStorage'],
         driver;
 
     beforeEach(function () {
@@ -8,7 +8,7 @@ describe("DomStorage", function () {
         driver_const.stores = {};
 
         tests.getDriver = function () {
-            driver = new jStore.drivers['DomStorage']({table_name:"dom", db_name:'Chegg'});
+            driver = new Bucket.drivers['DomStorage']({table_name: "dom", db_name: 'Chegg'});
             return driver;
         };
 
@@ -43,7 +43,7 @@ describe("DomStorage", function () {
                 keys[i].indexOf(prefix) > -1 && localStorage.removeItem(keys[i]);
             }
             cb && cb();
-        }
+        };
 
         tests.clear();
 
@@ -57,7 +57,7 @@ describe("DomStorage", function () {
         localStorage.clear();
         localStorage.setItem('test', 'test');
 
-        driver.set({'test':'test'}, null, function () {
+        driver.set({'test': 'test'}, null, function () {
             ++tests.done;
         });
 
@@ -95,5 +95,4 @@ describe("DomStorage", function () {
     });
 
     tests.runTests();
-})
-;
+});

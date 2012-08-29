@@ -1,7 +1,7 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 !function (ns, utils) {
-    
+
     /**
      * @module Driver.DomStorage
      */
@@ -22,11 +22,11 @@ var jStore = jStore || {};
      * @class DomStorage
      * @extends Driver
      **/
-    driver = jStore.registerDriver('DomStorage', {
+    driver = Bucket.registerDriver('DomStorage', {
 
-        name:'DomStorage',
+        name: 'DomStorage',
 
-        init:function () {
+        init: function () {
             var keys;
 
             // Set the prefix for this storage
@@ -50,7 +50,7 @@ var jStore = jStore || {};
             this.fireEvent('load:latched');
         },
 
-        clear:function (callback) {
+        clear: function (callback) {
             logger.log('clear');
 
             var key;
@@ -66,7 +66,7 @@ var jStore = jStore || {};
             return this.$parent('clear', arguments);
         },
 
-        each:function (callback) {
+        each: function (callback) {
             logger.log('each');
             var keys;
 
@@ -80,13 +80,13 @@ var jStore = jStore || {};
             return this.$parent('each', arguments);
         },
 
-        exists:function (key, callback) {
+        exists: function (key, callback) {
             logger.log('exists');
             callback(null, !!this.store[key]);
             return this.$parent('exists', arguments);
         },
 
-        get:function (key, callback) {
+        get: function (key, callback) {
             logger.log('get');
             var values = {};
 
@@ -103,20 +103,20 @@ var jStore = jStore || {};
             return this.$parent('get', arguments);
         },
 
-        getAll:function (callback) {
+        getAll: function (callback) {
             logger.log('getAll');
             callback(null, this.store);
             return this.$parent('getAll', arguments);
         },
 
-        getKeys:function (callback) {
+        getKeys: function (callback) {
             logger.log('getKeys');
             callback(null, Object.keys(this.store));
 
             return this.$parent('getKeys', arguments);
         },
 
-        remove:function (key, callback) {
+        remove: function (key, callback) {
             var keys = utils.toArray(key);
 
             keys.forEach(function (element) {
@@ -129,7 +129,7 @@ var jStore = jStore || {};
             return this.$parent('remove', arguments);
         },
 
-        set:function (key, value, callback) {
+        set: function (key, value, callback) {
             var map, keys = [], prop;
 
             if (typeof key == 'string' || typeof key == 'number') {
@@ -154,7 +154,7 @@ var jStore = jStore || {};
 
                 callback && callback(null);
             } catch (e) {
-                this.fireEvent('Error', {'error':e});
+                this.fireEvent('Error', {'error': e});
 
                 this.remove(keys);
 
@@ -163,7 +163,7 @@ var jStore = jStore || {};
             return this.$parent('set', arguments);
         },
 
-        test:function () {
+        test: function () {
             return !!localStorage && function () {
                 // in mobile safari if safe browsing is enabled, window.storage
                 // is defined but setItem calls throw exceptions.
@@ -180,12 +180,16 @@ var jStore = jStore || {};
             }();
         },
 
-        getLength:function (cb) {
+        getLength: function (cb) {
             cb(null, Object.keys(this.store).length);
 
             return this.$parent('getLength', arguments);
+        },
+
+        destroy: function () {
+            this.store = null;
         }
     });
 
     driver.stores = {};
-}.apply(jStore, [jStore, jStore.utils]);
+}.apply(Bucket, [Bucket, Bucket.utils]);

@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 (function () {
 
@@ -56,4 +56,4 @@ var jStore = jStore || {};
             }
         })();
 
-}).apply(jStore);
+}).apply(Bucket);

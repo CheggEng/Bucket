@@ -3,12 +3,11 @@
 <head>
     <title></title>
     <script src="../src/common/polyfills.js"></script>
-    <script src="../src/common/Error.js"></script>
     <script src="../src/Events/Events.js"></script>
     <script src="../src/common/Logger.js"></script>
     <script src="../src/common/utils.js"></script>
     <script src="../src/Driver.js"></script>
-    <script src="../src/jStore.js"></script>
+    <script src="../src/Bucket.js"></script>
     <script src="../src/drivers/InMemory.js"></script>
     <script src="../src/drivers/DomStorage.js"></script>
     <script src="../src/drivers/IndexedDB.js"></script>
@@ -23,7 +22,7 @@
     var driver;
 
     // getDriver method
-    driver = new jStore.drivers['IndexedDB']({
+    driver = new Bucket.drivers['IndexedDB']({
         db_name:"Chegg_ereader",
         table_name:"fonts"
     });

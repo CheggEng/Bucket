@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 !function (ns, utils) {
     /**
@@ -254,6 +254,19 @@ var jStore = jStore || {};
          */
         test:function () {
             return false;
+        },
+
+        /**
+         * Generate new Bucket.error object, then fire the driver error event.
+         * @param type {String} Bucket.error.TYPES constant.
+         * @param msg {String} the error massage we want to display.
+         * @param original_error {Object} the original error object.
+         * @return {Bucket.error} instance
+         */
+        generateError: function (type, msg, original_error) {
+            var err = new Bucket.error(type, msg, original_error);
+            this.fireEvent('error', {error: err});
+            return err;
         }
     };
 
@@ -266,4 +279,4 @@ var jStore = jStore || {};
     };
 
     ns.Driver = Driver;
-}.apply(jStore, [jStore, jStore.utils]);
+}.apply(Bucket, [Bucket, Bucket.utils]);

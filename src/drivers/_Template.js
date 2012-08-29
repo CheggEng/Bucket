@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 !function (ns, utils) {
     /**
@@ -8,21 +8,21 @@ var jStore = jStore || {};
     var logger = ns.Logger.getLogger("Template", ns.Logger.logLevels.ERROR),
         driver;
 
-    driver = jStore.registerDriver('Template', {
-        name:'Template',
+    driver = Bucket.registerDriver('Template', {
+        name: 'Template',
 
-        init:function (options) {
+        init: function (options) {
             this.fireEvent('load:latched');
         },
 
-        clear:function (callback) {
+        clear: function (callback) {
             logger.log('clear');
             callback && callback(null);
 
             return this.$parent('clear', arguments);
         },
 
-        each:function (callback) {
+        each: function (callback) {
             logger.log('each');
 
             /*
@@ -34,7 +34,7 @@ var jStore = jStore || {};
             return this.$parent('each', arguments);
         },
 
-        exists:function (key, callback) {
+        exists: function (key, callback) {
             logger.log('exists');
 
             // callback(null, exists);
@@ -42,7 +42,7 @@ var jStore = jStore || {};
             return this.$parent('exists', arguments);
         },
 
-        get:function (key, callback) {
+        get: function (key, callback) {
             logger.log('get');
 
             /*
@@ -55,7 +55,7 @@ var jStore = jStore || {};
             return this.$parent('get', arguments);
         },
 
-        getAll:function (callback) {
+        getAll: function (callback) {
             logger.log('getAll');
             /*
              callback(null, items);
@@ -63,7 +63,7 @@ var jStore = jStore || {};
             return this.$parent('getAll', arguments);
         },
 
-        getKeys:function (callback) {
+        getKeys: function (callback) {
             logger.log('getKeys');
 
             // callback(null, keys);
@@ -71,7 +71,7 @@ var jStore = jStore || {};
             return this.$parent('getKeys', arguments);
         },
 
-        remove:function (key, callback) {
+        remove: function (key, callback) {
             /*
              if (callback) {
              callback(null);
@@ -80,21 +80,25 @@ var jStore = jStore || {};
             return this.$parent('remove', arguments);
         },
 
-        set:function (key, value, callback) {
+        set: function (key, value, callback) {
             /*
              callback(null);
              */
             return this.$parent('set', arguments);
         },
 
-        test:function () {
+        test: function () {
             return false;
         },
 
-        getLength:function (cb) {
+        getLength: function (cb) {
             // cb(null,length);
 
             return this.$parent('getLength', arguments);
+        },
+
+        destroy: function () {
+            // delete any local var or close db connection
         }
     });
-}.apply(jStore, [jStore, jStore.utils]);
+}.apply(Bucket, [Bucket, Bucket.utils]);

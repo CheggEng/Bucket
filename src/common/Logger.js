@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 (function(ns){
 
@@ -157,4 +157,4 @@ var jStore = jStore || {};
 
     ns.Logger = Logger;
 
-}).apply(jStore, [jStore]);
+}).apply(Bucket, [Bucket]);
