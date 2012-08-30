@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 !function (ns) {
     /**
      * @module Driver.InMemory
@@ -16,7 +16,7 @@ var jStore = jStore || {};
      * @class InMemory
      * @extends Driver
      **/
-    jStore.registerDriver('InMemory', {
+    Bucket.registerDriver('InMemory', {
 
         /**
          * The InMemory storage use Object (JSON) to store all the data.<br/>
@@ -25,24 +25,24 @@ var jStore = jStore || {};
          * @type {Object}
          * @private
          */
-        _storage:{},
+        _storage: {},
 
-        name:'InMemory',
+        name: 'InMemory',
 
-        init:function () {
+        init: function () {
             // Set the prefix for this storage
             this.prefix = this.options.db_name + '_' + this.options.table_name + '_';
             this.prefixLen = this.prefix.length;
         },
 
-        clear:function (callback) {
+        clear: function (callback) {
             logger.log('clear');
             this._storage = {};
             callback && callback(null);
             return this;
         },
 
-        each:function (callback) {
+        each: function (callback) {
             logger.log('each');
             var key;
 
@@ -53,13 +53,13 @@ var jStore = jStore || {};
             }
         },
 
-        exists:function (key, callback) {
+        exists: function (key, callback) {
             logger.log('exist');
             callback(null, !!this._storage[this.prefix + key]);
             return this;
         },
 
-        get:function (keyOrArray, callback) {
+        get: function (keyOrArray, callback) {
             logger.log('get');
             var $this = this, values = {};
 
@@ -76,7 +76,7 @@ var jStore = jStore || {};
             return this;
         },
 
-        getAll:function (callback) {
+        getAll: function (callback) {
             logger.log('getAll');
             // We need to remove the prefix from all the keys before returning them
             var $this = this,
@@ -90,7 +90,7 @@ var jStore = jStore || {};
             return this;
         },
 
-        getKeys:function (callback) {
+        getKeys: function (callback) {
             logger.log('getKeys');
             // We need to remove the prefix from all the keys before returning them
             var $this = this,
@@ -104,7 +104,7 @@ var jStore = jStore || {};
             return this;
         },
 
-        remove:function (keyOrArray, callback) {
+        remove: function (keyOrArray, callback) {
             var $this = this;
 
             // check to see if teh first argument is String or array
@@ -121,7 +121,7 @@ var jStore = jStore || {};
             return this;
         },
 
-        set:function (keyOrMap, value) {
+        set: function (keyOrMap, value) {
 
             var $this = this;
 
@@ -138,10 +138,14 @@ var jStore = jStore || {};
             }
         },
 
-        test:function () {
+        test: function () {
             return true;
+        },
+
+        destroy: function () {
+            this._storage = null;
         }
 
     });
 
-}.apply(jStore, [jStore]);
+}.apply(Bucket, [Bucket]);

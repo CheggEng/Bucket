@@ -1,5 +1,5 @@
-var jStore = jStore || {};
-jStore.utils = jStore.utils || {};
+var Bucket = Bucket || {};
+Bucket.utils = Bucket.utils || {};
 
 !function (ns, utils) {
 
@@ -148,4 +148,4 @@ jStore.utils = jStore.utils || {};
     this.toArray = function(prop){
         return prop instanceof Array ? prop : [prop];
     };
-}.apply(jStore.utils, [jStore, jStore.utils]);
+}.apply(Bucket.utils, [Bucket, Bucket.utils]);

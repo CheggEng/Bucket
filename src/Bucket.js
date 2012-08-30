@@ -1,34 +1,49 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
-!function(ns,utils){
+!function (ns, utils) {
     /**
-     * @module jStore
+     * @module Bucket
      */
 
     /**
      * This clas represents a data store
      *
-     * @class jStore
+     * @class Bucket
      * @constructor
      *
      * @param {object} options
      *  @param {array} [options.drivers] a list of prioritized driver names to choose from
      *  @param {object} options.driver_options parameters to pass to the driver
      */
-    function jStore(options){
-       var driver = jStore.choose(options.drivers);
-       return new driver(options.driver_options);
+    function Bucket(options) {
+        var driver = Bucket.choose(options.drivers);
+        return new driver(options.driver_options);
     }
 
-    utils.merge(jStore, ns);
+    utils.merge(Bucket, ns);
 
+    /**
+     * extended error object
+     * @type {Error}
+     */
+    Bucket.error = function (type, msg, original_error) {
+        this.type = type;
+        this.message = msg;
+        this.original = original_error;
+    };
+    Bucket.error.prototype = new Error();
+    Bucket.error.prototype.constructor =  Bucket.error;
+    Bucket.error.TYPES = {
+        QUOTA_ERR: 1,
+        CONSTRAINT_ERR: 2
+    };
     /**
      * a stack of all registered driver names
      * @property stack
      * @type {array}
      * @private
      */
-    jStore.stack = [];
+    Bucket.stack = [];
 
     /**
      * a named list of all registered drivers
@@ -36,7 +51,7 @@ var jStore = jStore || {};
      * @type {object}
      * @private
      */
-    jStore.drivers = {};
+    Bucket.drivers = {};
 
     /**
      * a reference to the last automatically chosen driver
@@ -44,7 +59,7 @@ var jStore = jStore || {};
      * @type {ns.Driver}
      * @private
      */
-    jStore.chosen_driver = null;
+    Bucket.chosen_driver = null;
 
     /**
      * chooses a driver to use.
@@ -56,25 +71,25 @@ var jStore = jStore || {};
      *
      * @return ns.Driver
      */
-    jStore.choose = function (list) {
+    Bucket.choose = function (list) {
         var list_provided = !!list,
             i, driver, name;
 
-        list = list || jStore.stack;
+        list = list || Bucket.stack;
 
-        if (!list_provided && jStore.chosen_driver) return jStore.chosen_driver;
+        if (!list_provided && Bucket.chosen_driver) return Bucket.chosen_driver;
 
         for (i = 0; name = list[i]; i++) {
-            driver = jStore.drivers[name];
+            driver = Bucket.drivers[name];
 
-            if (driver.test()){
-                if (!list_provided) jStore.chosen_driver = driver;
+            if (driver.test()) {
+                if (!list_provided) Bucket.chosen_driver = driver;
                 return driver;
             }
         }
 
         return null;
-   };
+    };
 
     /**
      * Registers a driver.<br/>
@@ -88,7 +103,7 @@ var jStore = jStore || {};
      *
      * @return {Driver} the new driver
      */
-    jStore.registerDriver = function registerDriver(name, params) {
+    Bucket.registerDriver = function registerDriver(name, params) {
         var d;
 
         function driver() {
@@ -102,17 +117,17 @@ var jStore = jStore || {};
             throw "Driver must always have a test method";
         }
 
-        params.defaultOptions = utils.merge(ns.Driver.defaultOptions,params.defaultOptions || {});
+        params.defaultOptions = utils.merge(ns.Driver.defaultOptions, params.defaultOptions || {});
 
         d = utils.inherit(driver, ns.Driver, params);
         d.test = params.test;
         d.$name = name;
 
-        jStore.stack.push(d.$name);
+        Bucket.stack.push(d.$name);
 
-        jStore.drivers[name] = d;
+        Bucket.drivers[name] = d;
         return d;
     };
 
-    this.jStore = jStore;
-}.apply(this,[jStore,jStore.utils]);
+    this.Bucket = Bucket;
+}.apply(this, [Bucket, Bucket.utils]);

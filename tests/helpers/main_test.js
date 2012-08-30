@@ -5,7 +5,7 @@ tests.runTests = function runTests() {
     var
     /* Should return a driver*/
         getDriver = function () {
-            return new jStore.Driver();
+            return new Bucket.Driver();
         },
 
         /**

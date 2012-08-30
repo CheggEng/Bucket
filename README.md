@@ -1,4 +1,4 @@
-jStore
+Bucket
 ========
 
 Cross browser local storage

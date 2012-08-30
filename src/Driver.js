@@ -1,4 +1,4 @@
-var jStore = jStore || {};
+var Bucket = Bucket || {};
 
 !function (ns, utils) {
     /**
@@ -20,9 +20,10 @@ var jStore = jStore || {};
      * @constructor
      *
      * @param options - The options must contain the following parameters:
+     *                  required param is table_name, all other options are optional.
      * <pre><code>
      *   {
-     *     prefix : The prefix for the give component
+     *     table_name : The table name/prefix to use
      *   }
      *
      */
@@ -30,7 +31,6 @@ var jStore = jStore || {};
         Events.call(this);
         utils.Options.call(this);
         utils.Bind.call(this);
-
         this.setOptions(options);
     }
 
@@ -185,8 +185,6 @@ var jStore = jStore || {};
          * Any initialization code should be place here
          *
          * @method init
-         * @param options - Object for initialization.<br/>
-         *                  required param is table_name, all other options are optional.
          */
         init:function (options) {
         },
@@ -221,7 +219,7 @@ var jStore = jStore || {};
          * @method set
          * @param {String|Object} key      if string, will be used as a key name. If object, will be used
          *                                 as a key=>value map
-         * @param {String}        [value]  key value
+         * @param {String} [optional]      [value]  key value
          * @param {function}      [callback] will be called when action is done
          */
         set:function (keyOrMap, value, cb) {
@@ -256,13 +254,29 @@ var jStore = jStore || {};
          */
         test:function () {
             return false;
+        },
+
+        /**
+         * Generate new Bucket.error object, then fire the driver error event.
+         * @param type {String} Bucket.error.TYPES constant.
+         * @param msg {String} the error massage we want to display.
+         * @param original_error {Object} the original error object.
+         * @return {Bucket.error} instance
+         */
+        generateError: function (type, msg, original_error) {
+            var err = new Bucket.error(type, msg, original_error);
+            this.fireEvent('error', {error: err});
+            return err;
         }
     };
 
     Driver.defaultOptions = {
         table_name:'',
-        db_name:''
+        db_name:'',
+        db_size:'',
+        table_name:'',
+        fields:[]
     };
 
     ns.Driver = Driver;
-}.apply(jStore, [jStore, jStore.utils]);
+}.apply(Bucket, [Bucket, Bucket.utils]);
