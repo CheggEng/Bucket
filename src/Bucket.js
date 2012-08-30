@@ -64,6 +64,7 @@ var Bucket = Bucket || {};
     /**
      * chooses a driver to use.
      *
+     * @private
      * @method choose
      * @static
      *
@@ -128,6 +129,22 @@ var Bucket = Bucket || {};
         Bucket.drivers[name] = d;
         return d;
     };
+
+    /**
+     * Aliases a drivers name
+     *
+     * @param {string} alias 
+     * @param {string} name
+     *
+     * @static
+     *
+     * @return {Bucket.Driver} aliased driver
+     */
+    Bucket.alias = function(alias, name){
+        Bucket.drivers[alias] = Bucket.drivers[name];    
+
+        return Bucket.drivers[alias];
+    }
 
     this.Bucket = Bucket;
 }.apply(this, [Bucket, Bucket.utils]);

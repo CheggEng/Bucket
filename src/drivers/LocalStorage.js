@@ -6,7 +6,7 @@ var Bucket = Bucket || {};
      * @module Driver.DomStorage
      */
 
-    var logger = ns.Logger.getLogger("DomStorage", ns.Logger.logLevels.ERROR),
+    var logger = ns.Logger.getLogger("LocalStorage", ns.Logger.logLevels.ERROR),
         driver;
 
     /**
@@ -22,7 +22,7 @@ var Bucket = Bucket || {};
      * @class DomStorage
      * @extends Driver
      **/
-    driver = Bucket.registerDriver('DomStorage', {
+    driver = Bucket.registerDriver('LocalStorage', {
 
         name: 'DomStorage',
 
@@ -190,6 +190,8 @@ var Bucket = Bucket || {};
             this.store = null;
         }
     });
+    
+    Bucket.alias("DomStorage", "LocalStorage");
 
     driver.stores = {};
 }.apply(Bucket, [Bucket, Bucket.utils]);
