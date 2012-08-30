@@ -35,7 +35,7 @@ var Bucket = Bucket || {};
     }
 
     Driver.prototype = {
-        constructor:Driver,
+        constructor: Driver,
 
         /**
          * contains a list of default options for the driver
@@ -50,12 +50,12 @@ var Bucket = Bucket || {};
          * @property name
          * @type {String}
          */
-        name:'Driver',
+        name: 'Driver',
 
         /**
          * The storage prefix to allow same keys from different components.<br/>
          */
-        prefix:'',
+        prefix: '',
 
         /**
          * Delete all the records from the storage
@@ -71,7 +71,7 @@ var Bucket = Bucket || {};
          * @method clear
          * @param {function} [callback] - A callback function that will be invoked after the clear.
          */
-        clear:function (callback) {
+        clear: function (callback) {
             return this;
         },
 
@@ -90,7 +90,7 @@ var Bucket = Bucket || {};
          * @param {function} callback - A callback function that will handle the results.
          *                              The callback parameters are (key, value)
          */
-        each:function (callback) {
+        each: function (callback) {
             return this;
         },
 
@@ -111,7 +111,7 @@ var Bucket = Bucket || {};
          *
          * @return {Boolean} exists - true/false if the key exists or not
          */
-        exists:function (key, callback) {
+        exists: function (key, callback) {
             return false;
         },
 
@@ -136,7 +136,7 @@ var Bucket = Bucket || {};
          * @return {String|Object} if was asked for a collection of values, return a map, otherwise return a string
          *
          */
-        get:function (keyOrArray, callback) {
+        get: function (keyOrArray, callback) {
             return this;
         },
 
@@ -155,7 +155,7 @@ var Bucket = Bucket || {};
          * @param {function} callback - A callback function for processing the records
          * @return {object} key=>value map
          */
-        getAll:function (callback) {
+        getAll: function (callback) {
             return this;
         },
 
@@ -175,7 +175,7 @@ var Bucket = Bucket || {};
          *
          * @return {array} an array of key names
          */
-        getKeys:function (callback) {
+        getKeys: function (callback) {
             return this;
         },
 
@@ -186,7 +186,7 @@ var Bucket = Bucket || {};
          *
          * @method init
          */
-        init:function (options) {
+        init: function (options) {
         },
 
         /**
@@ -205,7 +205,7 @@ var Bucket = Bucket || {};
          * @param {String|Array} key/keys - The key(s) of the item we want to remove
          * @param {function} [callback]
          */
-        remove:function (keyOrArray, callback) {
+        remove: function (keyOrArray, callback) {
             return this;
         },
 
@@ -222,7 +222,7 @@ var Bucket = Bucket || {};
          * @param {String} [optional]      [value]  key value
          * @param {function}      [callback] will be called when action is done
          */
-        set:function (keyOrMap, value, cb) {
+        set: function (keyOrMap, value, cb) {
             return this;
         },
 
@@ -238,7 +238,7 @@ var Bucket = Bucket || {};
          *
          * @return {number}
          */
-        getLength:function (cb) {
+        getLength: function (cb) {
             return -1;
         },
 
@@ -252,7 +252,7 @@ var Bucket = Bucket || {};
          *
          * @return boolean
          */
-        test:function () {
+        test: function () {
             return false;
         },
 
@@ -264,17 +264,17 @@ var Bucket = Bucket || {};
          * @return {Bucket.error} instance
          */
         generateError: function (type, msg, original_error) {
-            var err = new Bucket.error(type, msg, original_error);
+            var err = new Bucket.Error(type || Bucket.Error.DEFAULT_ERR, msg || 'Default Error Massage', original_error);
             this.fireEvent('error', {error: err});
             return err;
         }
     };
 
     Driver.defaultOptions = {
-        table_name:'',
-        db_name:'',
-        db_size:'',
-        fields:[]
+        table_name: '',
+        db_name: '',
+        db_size: '',
+        fields: []
     };
 
     ns.Driver = Driver;

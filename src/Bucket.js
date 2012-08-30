@@ -117,18 +117,18 @@ var Bucket = Bucket || {};
     /**
      * Aliases a drivers name
      *
-     * @param {string} alias 
+     * @param {string} alias
      * @param {string} name
      *
      * @static
      *
      * @return {Bucket.Driver} aliased driver
      */
-    Bucket.alias = function(alias, name){
-        Bucket.drivers[alias] = Bucket.drivers[name];    
+    Bucket.alias = function (alias, name) {
+        Bucket.drivers[alias] = Bucket.drivers[name];
 
         return Bucket.drivers[alias];
-    };                
+    };
 
     /**
      * @class Bucket.Error
@@ -136,16 +136,27 @@ var Bucket = Bucket || {};
      * @extend Error
      */
     Bucket.Error = function (type, msg, original_error) {
+        this.name = 'Bucket Error';
         this.type = type;
         this.message = msg;
         this.original = original_error;
     };
     Bucket.Error.prototype = new Error();
-    Bucket.Error.prototype.constructor =  Bucket.Error;
-    Bucket.Error.prototype.toString = function(){return this.type + " Error: "+ this.message;};
+    Bucket.Error.prototype.constructor = Bucket.Error;
+    Bucket.Error.prototype.toString = function () {
+        return this.type + " " + this.name + " " + this.message;
+    };
 
     /**
-     * Siginifies an error that happened due to database size limit overflow
+     * Default error
+     * @property QUOTA_ERR
+     * @static
+     * @const
+     */
+    Bucket.Error.DEFAULT_ERR = "DEFAULT";
+
+    /**
+     * Signifies an error that happened due to database size limit overflow
      * @property QUOTA_ERR
      * @static
      * @const
@@ -168,7 +179,16 @@ var Bucket = Bucket || {};
      * @static
      * @const
      */
-    Bucket.Error.CONSTRAINT_ERR = "CONSTRAINT"; 
+    Bucket.Error.CONSTRAINT_ERR = "CONSTRAINT";
+
+    /**
+     * Signifies an error that happened due to a missing table, objectStore;
+     *
+     * @property NOTFOUND_ERR
+     * @static
+     * @const
+     */
+    Bucket.Error.NOT_FOUND_ERR = "NOTFOUND";
 
     this.Bucket = Bucket;
 }.apply(this, [Bucket, Bucket.utils]);
