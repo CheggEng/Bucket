@@ -150,4 +150,18 @@ describe('IndexedDB', function () {
         tests.clear();
     });
     tests.runTests();
+
+    it ("Should be able to check if falsey values exists", function(){
+        var driver = tests.getDriver(), done = 0;    
+
+        driver.addEvent('load', function(){
+            tests.set('foo', false, function(){
+                driver.exists('foo', function(flag){
+                    done++;
+                    expect(flag).toEqual(true, "Value should exist");
+                });    
+            });
+        });
+    });
+    
 });

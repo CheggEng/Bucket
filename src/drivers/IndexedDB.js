@@ -1,5 +1,3 @@
-var Bucket = Bucket || {};
-
 !function (ns, utils) {
 
     var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.DEBUG),
@@ -57,7 +55,7 @@ var Bucket = Bucket || {};
                 }
             }
 
-            db_req = driver.getDB().open($this.db_name, db_version);
+            db_req = driver.getDB().open(this.db_name, db_version);
             logger.log('open DB request', db_req);
 
             db_req.onsuccess = function (e) {
