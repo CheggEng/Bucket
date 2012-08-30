@@ -429,7 +429,7 @@ var Bucket = Bucket || {};
                         add_req.onsuccess = add_req_onsuccess;
                         add_req.onerror = add_req_onerror;
                     } catch (e) {
-                        callback && callback($this.generateError(Bucket.error.TYPES.PERMISSION_ERR, 'A write operation was attempted in a read-only transaction', e));
+                        callback && callback($this.generateError(Bucket.Error.PERMISSION_ERR, 'A write operation was attempted in a read-only transaction', e));
                     }
 
                 }
@@ -442,7 +442,7 @@ var Bucket = Bucket || {};
 
             trans.onerror = function (e) {
                 logger.log('transaction error event', e);
-                callback && callback($this.generateError(Bucket.error.TYPES.CONSTRAINT_ERR, 'Constraint error, key is already exists', e));
+                callback && callback($this.generateError(Bucket.Error.CONSTRAINT_ERR, 'Constraint error, key is already exists', e));
             };
 
             return this.$parent('set', arguments);

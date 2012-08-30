@@ -21,22 +21,6 @@ var Bucket = Bucket || {};
     }
 
     utils.merge(Bucket, ns);
-
-    /**
-     * extended error object
-     * @type {Error}
-     */
-    Bucket.error = function (type, msg, original_error) {
-        this.type = type;
-        this.message = msg;
-        this.original = original_error;
-    };
-    Bucket.error.prototype = new Error();
-    Bucket.error.prototype.constructor =  Bucket.error;
-    Bucket.error.TYPES = {
-        QUOTA_ERR: 1,
-        CONSTRAINT_ERR: 2
-    };
     /**
      * a stack of all registered driver names
      * @property stack
@@ -64,6 +48,7 @@ var Bucket = Bucket || {};
     /**
      * chooses a driver to use.
      *
+     * @private
      * @method choose
      * @static
      *
@@ -128,6 +113,62 @@ var Bucket = Bucket || {};
         Bucket.drivers[name] = d;
         return d;
     };
+
+    /**
+     * Aliases a drivers name
+     *
+     * @param {string} alias 
+     * @param {string} name
+     *
+     * @static
+     *
+     * @return {Bucket.Driver} aliased driver
+     */
+    Bucket.alias = function(alias, name){
+        Bucket.drivers[alias] = Bucket.drivers[name];    
+
+        return Bucket.drivers[alias];
+    };                
+
+    /**
+     * @class Bucket.Error
+     * @constructor
+     * @extend Error
+     */
+    Bucket.Error = function (type, msg, original_error) {
+        this.type = type;
+        this.message = msg;
+        this.original = original_error;
+    };
+    Bucket.Error.prototype = new Error();
+    Bucket.Error.prototype.constructor =  Bucket.Error;
+    Bucket.Error.prototype.toString = function(){return this.type + " Error: "+ this.message;};
+
+    /**
+     * Siginifies an error that happened due to database size limit overflow
+     * @property QUOTA_ERR
+     * @static
+     * @const
+     */
+    Bucket.Error.QUOTA_ERR = "QUOTA";
+
+    /**
+     * Signifies an error that happened due to an action that was not permitted
+     *
+     * @property PERMISSION_ERR
+     * @static
+     * @const
+     */
+    Bucket.Error.PERMISSION_ERR = "PERMISSION";
+
+    /**
+     * Signifies an error that happened due to an action that violated DB constraints
+     *
+     * @property CONSTRAINT_ERR
+     * @static
+     * @const
+     */
+    Bucket.Error.CONSTRAINT_ERR = "CONSTRAINT"; 
 
     this.Bucket = Bucket;
 }.apply(this, [Bucket, Bucket.utils]);

@@ -6,7 +6,7 @@ var Bucket = Bucket || {};
      * @module Driver.DomStorage
      */
 
-    var logger = ns.Logger.getLogger("DomStorage", ns.Logger.logLevels.ERROR),
+    var logger = ns.Logger.getLogger("LocalStorage", ns.Logger.logLevels.ERROR),
         driver;
 
     /**
@@ -22,7 +22,7 @@ var Bucket = Bucket || {};
      * @class DomStorage
      * @extends Driver
      **/
-    driver = Bucket.registerDriver('DomStorage', {
+    driver = Bucket.registerDriver('LocalStorage', {
 
         name: 'DomStorage',
 
@@ -130,7 +130,7 @@ var Bucket = Bucket || {};
         },
 
         set: function (key, value, callback) {
-            var map, keys = [], prop;
+            var map, keys = [], prop, err;
 
             if (typeof key == 'string' || typeof key == 'number') {
                 map = {};
@@ -153,12 +153,12 @@ var Bucket = Bucket || {};
                 }
 
                 callback && callback(null);
-            } catch (e) {
-                this.fireEvent('Error', {'error': e});
+            } catch ( e ) {
+                err = this.generateError(Bucket.Error.QUOTA_ERR, "LocalStorage exceeded quota", e);
 
                 this.remove(keys);
 
-                callback && callback(e);
+                callback && callback(err);
             }
             return this.$parent('set', arguments);
         },
@@ -190,6 +190,8 @@ var Bucket = Bucket || {};
             this.store = null;
         }
     });
+    
+    Bucket.alias("DomStorage", "LocalStorage");
 
     driver.stores = {};
 }.apply(Bucket, [Bucket, Bucket.utils]);
