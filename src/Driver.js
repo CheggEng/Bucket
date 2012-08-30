@@ -274,7 +274,6 @@ var Bucket = Bucket || {};
         table_name:'',
         db_name:'',
         db_size:'',
-        table_name:'',
         fields:[]
     };
 

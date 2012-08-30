@@ -130,7 +130,7 @@ var Bucket = Bucket || {};
         },
 
         set: function (key, value, callback) {
-            var map, keys = [], prop;
+            var map, keys = [], prop, err;
 
             if (typeof key == 'string' || typeof key == 'number') {
                 map = {};
@@ -153,12 +153,12 @@ var Bucket = Bucket || {};
                 }
 
                 callback && callback(null);
-            } catch (e) {
-                this.fireEvent('Error', {'error': e});
+            } catch ( e ) {
+                err = this.generateError(Bucket.Error.QUOTA_ERR, "LocalStorage exceeded quota", e);
 
                 this.remove(keys);
 
-                callback && callback(e);
+                callback && callback(err);
             }
             return this.$parent('set', arguments);
         },
