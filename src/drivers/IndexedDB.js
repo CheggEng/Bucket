@@ -481,7 +481,7 @@ var Bucket = Bucket || {};
          * @return {Boolean}
          */
         test: function () {
-            return false;
+            return !!driver.getDB();
         },
 
         /**
