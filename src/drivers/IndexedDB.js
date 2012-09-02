@@ -48,9 +48,9 @@
                     store.createIndex("key", "key", {unique: true});
 
                     if (trans !== null) {
-                        trans.oncomplete = callback && callback();
+                        trans.oncomplete = callback && callback(null);
                     } else {
-                        callback && callback();
+                        callback && callback(null);
                     }
                 } catch (e) {
                     callback && callback($this.generateError(e));
@@ -67,7 +67,7 @@
 
                 // if the version isn't change fire opendb and break logic.
                 if (parseInt(db_version, 10) === parseInt($this.db.version || 0, 10)) {
-                    callback && callback();
+                    callback && callback(null);
                     return;
                 }
 
@@ -109,10 +109,11 @@
 
             // Initiate connection to the indexedDB database
             this.openDB(function (error) {
-                if (error) {
-                    logger.log('openDB callback with error:', error);
-                } else {
+                if (error === null) {
+                    logger.log('openDB success fireEvent load:latched');
                     $this.fireEvent('load:latched');
+                } else {
+                    logger.log('openDB callback with error:', error);
                 }
             });
 
@@ -238,7 +239,7 @@
                     return;
                 }
 
-                callback && callback(null, !!value);
+                callback && callback(null, value !== null);
             });
 
             return this.$parent('exists', arguments);

@@ -156,7 +156,7 @@ describe('IndexedDB', function () {
 
         driver.addEvent('load', function () {
             tests.setValues('foo', false, function () {
-                driver.exists('foo', function (flag) {
+                driver.exists('foo', function (err, flag) {
                     done++;
                     expect(flag).toEqual(true, "Value should exist");
                 });
