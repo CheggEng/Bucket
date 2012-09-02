@@ -1,3 +1,5 @@
+var Bucket = Bucket || {};
+
 !function (ns, utils) {
 
     var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.DEBUG),
