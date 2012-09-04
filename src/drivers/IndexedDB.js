@@ -4,7 +4,7 @@ var Bucket = Bucket || {};
 
     var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.DEBUG),
         driver,
-        db_version = 3;
+        db_version = 1;
 
     /**
      * @module Driver.IndexedDB
@@ -50,7 +50,9 @@ var Bucket = Bucket || {};
                     store.createIndex("key", "key", {unique: true});
 
                     if (trans !== null) {
-                        trans.oncomplete = callback && callback(null);
+                        trans.oncomplete = function (e) {
+                            callback && callback(null);
+                        };
                     } else {
                         callback && callback(null);
                     }
@@ -77,19 +79,26 @@ var Bucket = Bucket || {};
 
                 // use older version of database onupgradeneeded (webkit)
                 if (typeof $this.db.setVersion === 'function') {
-                    var version_req = $this.db.setVersion(db_version);
+                    var version_req;
+
+                    version_req = $this.db.setVersion(db_version);
+
                     version_req.onsuccess = onupgradeneeded;
+
                     version_req.onerror = function (e) {
                         logger.log('setVersion error event', e);
                     };
+
                     version_req.onblocked = function (e) {
                         logger.log('setVersion blocked event', e);
                     };
+
                     logger.log('manual version upgrade for webkit', version_req);
                 }
             };
 
             db_req.onupgradeneeded = onupgradeneeded;
+
             db_req.onerror = function (e) {
                 logger.log('error in db request', e);
                 callback && callback($this.generateError(e));
@@ -235,14 +244,29 @@ var Bucket = Bucket || {};
         exists: function (key, callback) {
             logger.log('exists', key);
 
-            this.get(key, function (error, value) {
-                if (error !== null) {
-                    callback && callback(error);
-                    return;
-                }
+            var $this = this,
+                trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_ONLY),
+                store = trans.objectStore(this.table_name),
+                index = store.index('key'),
+                get_req,
+                value = null;
 
+            function req_onsuccess(e) {
+                if (e.target.result !== undefined) {
+                    value = e.target.result;
+                }
+            }
+
+            get_req = index.getKey(key);
+            get_req.onsuccess = req_onsuccess;
+
+            trans.oncomplete = function (e) {
                 callback && callback(null, value !== null);
-            });
+            };
+
+            trans.onerror = function (e) {
+                callback && callback($this.generateError(e));
+            };
 
             return this.$parent('exists', arguments);
         },
