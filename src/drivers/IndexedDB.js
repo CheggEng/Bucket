@@ -2,7 +2,7 @@ var Bucket = Bucket || {};
 
 !function (ns, utils) {
 
-    var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.DEBUG),
+    var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.ERROR),
         driver,
         db_version = 1;
 
@@ -41,8 +41,9 @@ var Bucket = Bucket || {};
 
                 //TODO: data migration between versions
 
-                if (db.objectStoreNames.length && db.objectStoreNames.contains($this.table_name)) {
-                    db.deleteObjectStore($this.table_name);
+                // Clear all ObjectStores in this database
+                while (db.objectStoreNames.length > 0) {
+                    db.deleteObjectStore(db.objectStoreNames[0]);
                 }
 
                 try {
