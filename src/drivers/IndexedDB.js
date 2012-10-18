@@ -201,7 +201,7 @@ var Bucket = Bucket || {};
                     // The success event handler is fired once for each entry.
                     // So call "continue" on your result object.
                     // This lets you iterate across the data
-                    result.continue();
+                    result['continue']();
                 };
 
                 cursor.onerror = function (e) {
@@ -417,7 +417,7 @@ var Bucket = Bucket || {};
                 }
 
                 for (i = 0; i < keys.length; ++i) {
-                    request = store.delete(keys[i]);
+                    request = store['delete'](keys[i]);
                     request.onsuccess = request_onsuccess;
                     request.onerror = request_onerror;
                 }
