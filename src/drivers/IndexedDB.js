@@ -2,8 +2,7 @@ var Bucket = Bucket || {};
 
 !function (ns, utils) {
 
-    var logger = ns.Logger.getLogger("IndexedDB", ns.Logger.logLevels.ERROR),
-        driver,
+    var driver,
         db_version = 1;
 
     /**
@@ -16,9 +15,10 @@ var Bucket = Bucket || {};
      */
     driver = Bucket.registerDriver('IndexedDB', {
         name: 'IndexedDB',
-
+        wrap : ['exists','get','set','fetchByKeyRange','clear','remove','getLength','getDBConnection'],
+        
         openDB: function (callback) {
-            logger.log('_openDB start');
+            this.logger.log('_openDB start');
 
             var $this = this,
                 db_req;
@@ -37,7 +37,7 @@ var Bucket = Bucket || {};
                         break;
                 }
 
-                logger.log('onupgradeneeded occur, new version is: ', db.version);
+                $this.logger.log('onupgradeneeded occur, new version is: ', db.version);
 
                 //TODO: data migration between versions
 
@@ -49,7 +49,6 @@ var Bucket = Bucket || {};
                 try {
                     store = db.createObjectStore($this.table_name, {'keyPath': 'key'});
                     store.createIndex("key", "key", {unique: true});
-
                     if (trans !== null) {
                         trans.oncomplete = function (e) {
                             callback && callback(null);
@@ -63,10 +62,10 @@ var Bucket = Bucket || {};
             }
 
             db_req = driver.getDB().open(this.db_name, db_version);
-            logger.log('open DB request', db_req);
+            this.logger.log('open DB request', db_req);
 
             db_req.onsuccess = function (e) {
-                logger.log('open DB request success event', e);
+                $this.logger.log('open DB request success event', e);
                 // keep db reference.
                 $this.db = e.target.result;
 
@@ -76,7 +75,7 @@ var Bucket = Bucket || {};
                     return;
                 }
 
-                logger.log('request version is higher then current, performing upgrade...');
+                $this.logger.log('request version is higher then current, performing upgrade...');
 
                 // use older version of database onupgradeneeded (webkit)
                 if (typeof $this.db.setVersion === 'function') {
@@ -87,60 +86,95 @@ var Bucket = Bucket || {};
                     version_req.onsuccess = onupgradeneeded;
 
                     version_req.onerror = function (e) {
-                        logger.log('setVersion error event', e);
+                        $this.logger.log('setVersion error event', e);
                     };
 
                     version_req.onblocked = function (e) {
-                        logger.log('setVersion blocked event', e);
+                        $this.logger.log('setVersion blocked event', e);
                     };
 
-                    logger.log('manual version upgrade for webkit', version_req);
+                    $this.logger.log('manual version upgrade for webkit', version_req);
                 }
             };
 
             db_req.onupgradeneeded = onupgradeneeded;
 
             db_req.onerror = function (e) {
-                logger.log('error in db request', e);
+                $this.logger.log('error in db request', e);
                 callback && callback($this.generateError(e));
             };
         },
-
+        
         /**
          *
          * @return {*}
          */
         init: function () {
-            logger.log('init');
+            this.logger = ns.Logger.getLogger("IndexedDB " + this.options.db_name, ns.Logger.logLevels.ERROR);
+            
+            this.logger.log('init');
 
-            var $this = this;
+            this.wrapMethods();
 
             // Database properties
             this.db_name = this.options.db_name;
             this.table_name = this.options.table_name;
 
-            // Initiate connection to the indexedDB database
+            // Initiate connection to the indexedDB database;
+            this.state = driver.STATES.CONNECTING;
             this.openDB(function (error) {
                 if (error === null) {
-                    logger.log('openDB success fireEvent load:latched');
-                    $this.fireEvent('load:latched');
+                    this.state = driver.STATES.CONNECTED;
+                    this.logger.log('openDB success fireEvent load:latched');
+                    this.fireEvent('load:latched');
                 } else {
-                    logger.log('openDB callback with error:', error);
+                    this.state = driver.STATES.DISCONNECTED;
+                    this.logger.log('openDB callback with error:', error);
                 }
-            });
+            }.bind(this));
 
             return this;
         },
 
         /**
          *
+         */
+        wrapMethods: function () {
+            var i,
+                name,
+                method_list = this.wrap,
+                $this = this;
+            
+            function wrap(method){
+                $this[name] = function () {
+                    var args = Array.prototype.splice.call(arguments,0);
+                    if (this.state === driver.STATES.CONNECTED) {
+                        method.apply(this, args);
+                    } else {
+                        this.addEvent('load:once', function () {
+                            method.apply($this, args);
+                        });
+                    }
+                }.bind($this);
+            }
+            
+            for (i = 0; name = method_list[i]; i++) {
+                wrap(this[name]);
+            }
+        },
+        
+        /**
+         *
          * @param callback
          * @return {*}
          */
         clear: function (callback) {
-            logger.log('clear');
+            this.logger.log('clear');
 
-            var $this = this, trans, store, clear_req;
+            var $this = this,
+                trans,
+                store,
+                clear_req;
 
             try {
                 trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_WRITE);
@@ -148,20 +182,20 @@ var Bucket = Bucket || {};
                 clear_req = store.clear();
 
                 clear_req.onsuccess = function (e) {
-                    logger.log('objectStore clear success event', e);
+                    $this.logger.log('objectStore clear success event', e);
                 };
 
                 clear_req.onerror = function (e) {
-                    logger.log('objectStore clear error event', e);
+                    $this.logger.log('objectStore clear error event', e);
                 };
 
                 trans.oncomplete = function (e) {
-                    logger.log('clear transaction complete event', e);
+                    $this.logger.log('clear transaction complete event', e);
                     callback && callback(null);
                 };
 
                 trans.onerror = function (e) {
-                    logger.log('clear transaction error event', e);
+                    $this.logger.log('clear transaction error event', e);
                     callback && callback($this.generateError(e));
                 };
             } catch (e) {
@@ -177,7 +211,11 @@ var Bucket = Bucket || {};
          * @param callback
          */
         fetchByKeyRange: function (callback, each, key_range) {
-            var $this = this, cursor, trans, store, items = {};
+            var $this = this,
+                cursor,
+                trans,
+                store,
+                items = {};
 
             try {
                 trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_ONLY);
@@ -229,7 +267,7 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         each: function (callback) {
-            logger.log('each');
+            this.logger.log('each');
 
             callback && this.fetchAll(callback, true);
 
@@ -243,12 +281,12 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         exists: function (key, callback) {
-            logger.log('exists', key);
+            this.logger.log('exists', key);
 
             var $this = this,
-                trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_ONLY),
-                store = trans.objectStore(this.table_name),
-                index = store.index('key'),
+                trans,
+                store,
+                index,
                 get_req,
                 value = null;
 
@@ -258,8 +296,15 @@ var Bucket = Bucket || {};
                 }
             }
 
-            get_req = index.getKey(key);
-            get_req.onsuccess = req_onsuccess;
+            try {
+                trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_ONLY);
+                store = trans.objectStore(this.table_name);
+                index = store.index('key');
+                get_req = index.getKey(key);
+                get_req.onsuccess = req_onsuccess;
+            } catch (e) {
+                callback && callback($this.generateError(e));
+            }
 
             trans.oncomplete = function (e) {
                 callback && callback(null, value !== null);
@@ -279,7 +324,7 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         get: function (key, callback) {
-            logger.log('get', key);
+            this.logger.log('get', key);
 
             var $this = this,
                 keys = [],
@@ -347,7 +392,7 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         getAll: function (callback) {
-            logger.log('getAll');
+            this.logger.log('getAll');
 
             callback && this.fetchAll(callback);
 
@@ -360,7 +405,7 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         getKeys: function (callback) {
-            logger.log('getKeys');
+            this.logger.log('getKeys');
 
             this.getAll(function (error, items) {
                 var key, keys = [];
@@ -389,7 +434,7 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         remove: function (key, callback) {
-            logger.log('remove', key);
+            this.logger.log('remove', key);
 
             var $this = this,
                 keys = [],
@@ -399,11 +444,11 @@ var Bucket = Bucket || {};
                 request;
 
             function request_onsuccess(e) {
-                logger.log('objectStore delete success event', e);
+                $this.logger.log('objectStore delete success event', e);
             }
 
             function request_onerror(e) {
-                logger.log('objectStore delete error event', e);
+                $this.logger.log('objectStore delete error event', e);
             }
 
             try {
@@ -423,12 +468,12 @@ var Bucket = Bucket || {};
                 }
 
                 trans.oncomplete = function (e) {
-                    logger.log('remove transaction complete event', e);
+                    $this.logger.log('remove transaction complete event', e);
                     callback && callback(null);
                 };
 
                 trans.onerror = function (e) {
-                    logger.log('remove transaction error event', e);
+                    $this.logger.log('remove transaction error event', e);
                     callback && callback($this.generateError(e));
                 };
 
@@ -447,9 +492,14 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         set: function (key, value, callback) {
-            logger.log('set', key, value);
+            this.logger.log('set', key, value);
 
-            var $this = this, map, trans, store, k, add_req;
+            var $this = this,
+                map,
+                trans,
+                store,
+                k,
+                add_req;
 
             if (typeof key === 'string' || typeof key === 'number') {
                 map = {};
@@ -463,11 +513,11 @@ var Bucket = Bucket || {};
                 store = trans.objectStore(this.table_name);
 
                 function add_req_onsuccess(e) {
-                    logger.log('add request success event ', e);
+                    $this.logger.log('add request success event ', e);
                 }
 
                 function add_req_onerror(e) {
-                    logger.log('add request error event ', e);
+                    $this.logger.log('add request error event ', e);
                 }
 
                 for (k in map) {
@@ -486,12 +536,12 @@ var Bucket = Bucket || {};
                 }
 
                 trans.oncomplete = function (e) {
-                    logger.log('add transaction complete event', e);
+                    $this.logger.log('add transaction complete event', e);
                     callback && callback(null);
                 };
 
                 trans.onerror = function (e) {
-                    logger.log('add transaction error event', e);
+                    $this.logger.log('add transaction error event', e);
                     callback && callback($this.generateError(e));
                 };
             } catch (e) {
@@ -506,7 +556,7 @@ var Bucket = Bucket || {};
          * @return {Boolean}
          */
         test: function () {
-            return !!driver.getDB();
+            return !!driver.getDB() && !window.mozIndexedDB;
         },
 
         /**
@@ -515,21 +565,28 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         getLength: function (callback) {
-            logger.log('getLength');
+            this.logger.log('getLength');
 
-            var trans, store, req;
+            var $this = this,
+                trans,
+                store,
+                req;
 
-            trans = this.db.transaction(this.table_name, driver.TRANS_TYPES.READ_WRITE);
-            store = trans.objectStore(this.table_name);
-            req = store.count();
+            try {
+                trans = this.db.transaction(this.table_name, driver.TRANS_TYPES.READ_WRITE);
+                store = trans.objectStore(this.table_name);
+                req = store.count();
 
-            req.onsuccess = function (e) {
-                callback && callback(null, parseInt(e.target.result || 0, 10));
-            };
+                req.onsuccess = function (e) {
+                    callback && callback(null, parseInt(e.target.result || 0, 10));
+                };
 
-            req.onerror = function (e) {
-                callback && callback(e);
-            };
+                req.onerror = function (e) {
+                    callback && callback(e);
+                };
+            } catch (e) {
+                callback && callback($this.generateError(e));
+            }
 
             return this.$parent('getLength', arguments);
         },
@@ -553,7 +610,12 @@ var Bucket = Bucket || {};
         },
 
         destroy: function () {
-            this.db.close();
+            try {
+                return this.db.close();
+            } catch (e) {
+                return this.generateError(e);
+            }
+
         }
     });
 
@@ -571,6 +633,12 @@ var Bucket = Bucket || {};
         READ_ONLY: 'readonly',
         READ_WRITE: 'readwrite',
         VERSION_CHANGE: 'versionchange'
+    };
+
+    driver.STATES = {
+        DISCONNECTED: 0,
+        CONNECTING: 1,
+        CONNECTED: 2
     };
 
     driver.ERROR_MAP = {};
