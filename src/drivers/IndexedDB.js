@@ -149,7 +149,7 @@ var Bucket = Bucket || {};
                 $this[name] = function () {
                     var args = Array.prototype.splice.call(arguments,0);
                     if (this.state === driver.STATES.CONNECTED) {
-                        method.apply(this, args);
+                        return method.apply(this, args);
                     } else {
                         this.addEvent('load:once', function () {
                             method.apply($this, args);
@@ -302,18 +302,18 @@ var Bucket = Bucket || {};
                 index = store.index('key');
                 get_req = index.getKey(key);
                 get_req.onsuccess = req_onsuccess;
+
+                trans.oncomplete = function (e) {
+                    callback && callback(null, value !== null);
+                };
+
+                trans.onerror = function (e) {
+                    callback && callback($this.generateError(e));
+                };
             } catch (e) {
                 callback && callback($this.generateError(e));
             }
-
-            trans.oncomplete = function (e) {
-                callback && callback(null, value !== null);
-            };
-
-            trans.onerror = function (e) {
-                callback && callback($this.generateError(e));
-            };
-
+            
             return this.$parent('exists', arguments);
         },
 
@@ -556,7 +556,13 @@ var Bucket = Bucket || {};
          * @return {Boolean}
          */
         test: function () {
-            return !!driver.getDB() && !window.mozIndexedDB;
+            var result = !!driver.getDB();
+            
+            if(/firefox/.test(navigator.userAgent.toLowerCase())){
+                result = result && (16 <= parseInt(navigator.userAgent.toLowerCase().match(/firefox\/(\d*)/)[1]))
+            }
+            
+            return result;
         },
 
         /**
@@ -591,8 +597,8 @@ var Bucket = Bucket || {};
             return this.$parent('getLength', arguments);
         },
 
-        getDBConnection: function () {
-            return this.db;
+        getDBConnection: function (cb) {
+            cb(this.db);
         },
 
         generateError: function (e) {
