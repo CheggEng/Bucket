@@ -110,15 +110,15 @@ var Bucket = Bucket || {};
          * @return {*}
          */
         init: function () {
-            this.logger = ns.Logger.getLogger("IndexedDB " + this.options.db_name, ns.Logger.logLevels.ERROR);
-            
-            this.logger.log('init');
-
-            this.wrapMethods();
-
             // Database properties
             this.db_name = this.options.db_name;
             this.table_name = this.options.table_name;
+            
+            // Init instance's logger
+            this.logger = ns.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, ns.Logger.logLevels.ERROR);
+            this.logger.log('init');
+
+            this.wrapMethods();
 
             // Initiate connection to the indexedDB database;
             this.state = driver.STATES.CONNECTING;
