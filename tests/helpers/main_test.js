@@ -137,7 +137,7 @@ tests.runTests = function runTests() {
         });
     });
     
-    it("Should get values properly as design", function () {
+    it("Should return object when asking for array of elements", function () {
         initTest(2, function (driver) {
             
             tests.setValues({"arieh":"glazer", "yehuda":"gilad"}, function () {
@@ -145,7 +145,7 @@ tests.runTests = function runTests() {
                 
                 driver.get(["arieh"], function (err, map) {
                     expect(err).toEqual(null, "there should be no error");
-                    expect(JSON.stringify(map)).toEqual(JSON.stringify({"arieh":"glazer"}), 'should always return object even of singular array item');
+                    expect(JSON.stringify(map)).toEqual(JSON.stringify({"arieh":"glazer"}), 'expecting object to be returned');
                     tests.done++;
                 });
             });
