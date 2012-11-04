@@ -12,7 +12,7 @@ var Bucket = Bucket || {};
 
         query: function (opts) {
             if (!this.db) {
-                console.warn('cannot continue, db connection is missing');
+                console.warn('cannot continue, db connection is missing', this);
                 return;
             }
 
@@ -155,12 +155,15 @@ var Bucket = Bucket || {};
                         }
 
                         if (opts.singular) {
-                            callback(null, res.rows.item(0).value);
+                            callback(null, JSON.parse(res.rows.item(0).value));
                             return;
                         }
 
                         for (var i = 0; i < res.rows.length; i++) {
                             item = res.rows.item(i);
+                            if(item.value){
+                                item.value = JSON.parse(item.value);
+                            }
 
                             if (opts.each) {
                                 callback(null, item.key, item.value);
@@ -273,7 +276,7 @@ var Bucket = Bucket || {};
                             sql += ' UNION ';
                         }
                         sql += ' SELECT ?, ?';
-                        sqlArgs.push(k, map[k]);
+                        sqlArgs.push(k, JSON.stringify(map[k]));
                     }
                 }
 
