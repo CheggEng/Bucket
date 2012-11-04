@@ -82,11 +82,11 @@ describe('IndexedDB', function () {
 
                 // set add request events handlers so we won't generate them inside the loop
                 function add_req_onsuccess(e) {
-                    console.log('add request success event ', e);
+                    //console.log('add request success event ', e);
                 }
     
                 function add_req_onerror(e) {
-                    console.log('add request error event ', e);
+                    //console.log('add request error event ', e);
                 }
     
                 for (key in values) {
@@ -102,12 +102,12 @@ describe('IndexedDB', function () {
                 }
     
                 trans.oncomplete = function (e) {
-                    console.log('transaction complete event', e);
+                    //console.log('transaction complete event', e);
                     cb(null);
                 };
     
                 trans.onerror = function (e) {
-                    console.log('transaction error event', e);
+                    //console.log('transaction error event', e);
                     cb(e);
                 };
             });
