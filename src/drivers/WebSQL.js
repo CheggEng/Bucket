@@ -30,11 +30,11 @@ var Bucket = Bucket || {};
                 db_size = 50 * 1024 * 1024; //in bytes
 
             function onSuccess() {
-                callback(null);
+                callback && callback(null);
             }
 
             function onError(e) {
-                callback($this.generateError(e));
+                callback && callback($this.generateError(e));
             }
 
             try {
@@ -48,7 +48,7 @@ var Bucket = Bucket || {};
                     onError: onError
                 });
             } catch (e) {
-                callback($this.generateError(e));
+                callback && callback($this.generateError(e));
             }
         },
 
@@ -83,7 +83,7 @@ var Bucket = Bucket || {};
         each: function (callback) {
             this.logger.log('each');
 
-            this.fetchAllByRange(callback, {each: true});
+            callback && this.fetchAllByRange(callback, {each: true});
 
             return this.$parent('each', arguments);
         },
@@ -95,9 +95,9 @@ var Bucket = Bucket || {};
             
             this.fetchAllByRange(function (e, values) {
                 if(!e){
-                    callback(null, values !== null && values.length > 0);
+                    callback && callback(null, values !== null && values.length > 0);
                 } else {
-                    callback($this.generateError(e))
+                    callback && callback($this.generateError(e))
                 }
             }, {
                 keys_only: true,
@@ -201,7 +201,7 @@ var Bucket = Bucket || {};
 
             keys = "'" + keys.join("', '") + "'";
 
-            this.fetchAllByRange(callback, {where_in: keys, singular: singular});
+            callback && this.fetchAllByRange(callback, {where_in: keys, singular: singular});
 
             return this.$parent('get', arguments);
         },
@@ -209,7 +209,7 @@ var Bucket = Bucket || {};
         getAll: function (callback) {
             this.logger.log('getAll');
 
-            this.fetchAllByRange(callback);
+            callback && this.fetchAllByRange(callback);
 
             return this.$parent('getAll', arguments);
         },
@@ -217,7 +217,7 @@ var Bucket = Bucket || {};
         getKeys: function (callback) {
             this.logger.log('getKeys');
 
-            this.fetchAllByRange(callback, {keys_only: true});
+            callback && this.fetchAllByRange(callback, {keys_only: true});
 
             return this.$parent('getKeys', arguments);
         },
@@ -239,14 +239,14 @@ var Bucket = Bucket || {};
                     sql: 'DELETE FROM ' + this.table_name + ' WHERE key IN ( ' + keys + ' )',
                     sqlArgs: [],
                     onSuccess: function (trans, res) {
-                        callback(null);
+                        callback && callback(null);
                     },
                     onError: function (e) {
-                        callback($this.generateError(e));
+                        callback && callback($this.generateError(e));
                     }
                 });
             } catch (e) {
-                callback($this.generateError(e));
+                callback && callback($this.generateError(e));
             }
 
             return this.$parent('remove', arguments);
@@ -285,10 +285,10 @@ var Bucket = Bucket || {};
                     sql: opts.sql,
                     sqlArgs: opts.sqlArgs,
                     onSuccess: function () {
-                        callback(null);
+                        callback && callback(null);
                     },
                     onError: function (e) {
-                        callback($this.generateError(e));
+                        callback && callback($this.generateError(e));
                     }
                 });
             }
@@ -303,7 +303,7 @@ var Bucket = Bucket || {};
             try {
                 runQuery(buildSQL(map));
             } catch (e) {
-                callback($this.generateError(e));
+                callback && callback($this.generateError(e));
             }
 
             return this.$parent('set', arguments);
@@ -317,7 +317,7 @@ var Bucket = Bucket || {};
 
             var $this = this;
 
-            this.fetchAllByRange(callback, {count: true});
+            callback && this.fetchAllByRange(callback, {count: true});
 
             return this.$parent('getLength', arguments);
         },
