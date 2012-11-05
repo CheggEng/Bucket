@@ -562,6 +562,10 @@ var Bucket = Bucket || {};
                 result = result && (16 <= parseInt(navigator.userAgent.toLowerCase().match(/firefox\/(\d*)/)[1]))
             }
             
+            if(window.webkitIndexedDB){
+                result = false;
+            }
+            
             return result;
         },
 
