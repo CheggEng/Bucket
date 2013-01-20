@@ -74,8 +74,24 @@ var Bucket = Bucket || {};
         },
 
         clear: function (callback) {
+            var $this = this;
+            
             this.logger.log('clear');
-            callback && callback(null);
+                
+            try {
+                $this.query({
+                    sql: 'DELETE FROM ' + this.table_name,
+                    sqlArgs: [],
+                    onSuccess: function (trans, res) {
+                        callback && callback(null);
+                    },
+                    onError: function (e) {
+                        callback && callback($this.generateError(e));
+                    }
+                });
+            } catch (e) {
+                callback && callback($this.generateError(e));
+            }
 
             return this.$parent('clear', arguments);
         },
