@@ -176,6 +176,14 @@ var Bucket = Bucket || {};
                 store,
                 clear_req;
 
+            if (this.state != driver.STATES.CONNECTED){
+                this.addEvent('load', function(){
+                    this.clear();    
+                }.bind(this));   
+
+                return;
+            }
+
             try {
                 trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_WRITE);
                 store = trans.objectStore(this.table_name);
@@ -559,7 +567,7 @@ var Bucket = Bucket || {};
             var result = !!driver.getDB();
             
             if(/firefox/.test(navigator.userAgent.toLowerCase())){
-                result = result && (16 <= parseInt(navigator.userAgent.toLowerCase().match(/firefox\/(\d*)/)[1]))
+                result = result && (16 <= parseInt(navigator.userAgent.toLowerCase().match(/firefox\/(\d*)/)[1]));
             }
             
             if(window.webkitIndexedDB){
