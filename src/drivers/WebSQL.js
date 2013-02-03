@@ -44,12 +44,16 @@ var Bucket = Bucket || {};
                 // right now i disregard version change in WebSQL
                 this.db = openDatabase(this.db_name, '', this.db_name, db_size);
                 // open transaction and try to create a table.
-                this.query({
-                    sql: 'CREATE TABLE IF NOT EXISTS ' + $this.table_name + ' (key PRIMARY KEY, value)',
-                    sqlArgs: [],
-                    onSuccess: onSuccess,
-                    onError: onError
-                });
+                this.db.transaction(
+                    function (trans) {
+                        trans.executeSql(
+                            'CREATE TABLE IF NOT EXISTS ' + $this.table_name + ' (key PRIMARY KEY, value)', 
+                            [], 
+                            onSuccess, 
+                            onError
+                        );
+                    }
+                );
             } catch (e) {
                 callback && callback($this.generateError(e));
             }
