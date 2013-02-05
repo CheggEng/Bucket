@@ -12,10 +12,6 @@ var Bucket = Bucket || {};
 
         query: function (opts) {
             var db = this.db;
-            if (!db) {
-                console.warn('cannot continue, db connection is missing', this);
-                return;
-            }
 
             this.addEvent('load', function(){
                 db.transaction(
