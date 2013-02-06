@@ -1,6 +1,7 @@
 describe('WebSQL', function () {
     var db_name = 'Chegg',
-        table_name = 'test',
+        real_table = 'test',
+        table_name = 'Chegg_test',
         driver_const = Bucket.drivers['WebSQL'],
         driver,
         db;
@@ -9,15 +10,15 @@ describe('WebSQL', function () {
 
         driver_const.stores = {};
 
-        tests.getDriver = function () {
+        tests.getDriver = function (db, table) {
             driver = new Bucket.drivers['WebSQL']({
-                table_name: table_name,
-                db_name: db_name
+                table_name: table || real_table,
+                db_name: db ||db_name
             });
             return driver;
         };
 
-        db = openDatabase(db_name, '', db_name, 50 * 1024 * 1024);
+        db = openDatabase('Bucket', '', 'Bucket', 50 * 1024 * 1024);
 
         tests.query = function (cb) {
             db.transaction(
@@ -33,7 +34,7 @@ describe('WebSQL', function () {
                 sqlArgs: [key],
                 onSuccess: function (trans, res) {
                     if (res.rows.length > 0) {
-                        cb(res.rows.item(0).value);
+                        cb(JSON.parse(res.rows.item(0).value));
                     } else {
                         cb(null);
                     }
@@ -52,16 +53,16 @@ describe('WebSQL', function () {
                     sql = '',
                     sqlArgs = [];
 
+                sql = 'INSERT OR REPLACE INTO ' + table_name + ' (key, value) ';
                 for (k in values) {
                     if (values.hasOwnProperty(k)) {
-                        if (first) {
-                            sql = 'INSERT OR REPLACE INTO ' + table_name + ' (key, value) ';
-                            first = false;
-                        } else {
+                        if (!first) {
                             sql += ' UNION ';
+                        } else {
+                            first = false;
                         }
                         sql += ' SELECT ?, ?';
-                        sqlArgs.push(k, values[k]);
+                        sqlArgs.push(k, JSON.stringify(values[k]));
                     }
                 }
                 return {sql: sql, sqlArgs: sqlArgs};
@@ -116,17 +117,6 @@ describe('WebSQL', function () {
     });
     tests.runTests();
 
-    it("Should be able to check if falsey values exists", function () {
-        var driver = tests.getDriver(), done = 0;
 
-        driver.addEvent('load', function () {
-            tests.setValues('foo', false, function () {
-                driver.exists('foo', function (err, flag) {
-                    done++;
-                    expect(flag).toEqual(true, "Value should exist");
-                });
-            });
-        });
-    });
 
 });

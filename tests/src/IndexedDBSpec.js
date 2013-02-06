@@ -1,5 +1,6 @@
 describe('IndexedDB', function () {
     var db_name = 'Chegg',
+        real_table = 'test',
         table_name = 'test',
         db_version = 1,
         driver_const = Bucket.drivers['IndexedDB'],
@@ -9,10 +10,10 @@ describe('IndexedDB', function () {
 
         driver_const.stores = {};
 
-        tests.getDriver = function () {
+        tests.getDriver = function (db, table) {
             driver = new Bucket.drivers['IndexedDB']({
-                table_name: table_name,
-                db_name: db_name
+                table_name: table || real_table,
+                db_name: db || db_name
             });
             return driver;
         };
@@ -124,46 +125,33 @@ describe('IndexedDB', function () {
         tests.clear = function (cb) {
             console.log('tests.clear');
 
-            function getDB(cb) {
-                var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB,
-                    db_req = indexedDB.open(db_name, db_version);
-
-                db_req.onsuccess = function (e) {
-                    cb(e.target.result);
-                };
+            if (!driver) {
+                tests.getDriver();
             }
 
-            getDB(function (db) {
-                var trans = db.transaction([table_name], "readwrite"),
-                    store = trans.objectStore(table_name);
+            driver.addEvent('load', function(){
 
-                store.clear();
+                driver.getDBConnection(function (db) {
+                    var trans = db.transaction([table_name], "readwrite"),
+                        store = trans.objectStore(table_name);
 
-                trans.oncomplete = function (e) {
-                    cb && cb(null);
-                };
+                    store.clear();
 
-                trans.onerror = function (e) {
-                    cb && cb(e);
-                };
+                    trans.oncomplete = function (e) {
+                        cb && cb(null);
+                    };
+
+                    trans.onerror = function (e) {
+                        cb && cb(e);
+                    };
+                });
+
             });
         };
 
         tests.clear();
     });
+
     tests.runTests();
-
-    it("Should be able to check if falsey values exists", function () {
-        var driver = tests.getDriver(), done = 0;
-
-        driver.addEvent('load', function () {
-            tests.setValues('foo', false, function () {
-                driver.exists('foo', function (err, flag) {
-                    done++;
-                    expect(flag).toEqual(true, "Value should exist");
-                });
-            });
-        });
-    });
 
 });

@@ -57,8 +57,8 @@ var Bucket = Bucket || {};
 
         init: function (options) {
             // Database properties
-            this.db_name = this.options.db_name;
-            this.table_name = this.options.table_name;
+            this.db_name = 'Bucket';
+            this.table_name = this.options.db_name + '_' + this.options.table_name;
 
             // Init instance's logger
             this.logger = ns.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, ns.Logger.logLevels.ERROR);
@@ -161,7 +161,7 @@ var Bucket = Bucket || {};
                     sqlArgs: sqlArgs,
                     onSuccess: function (trans, res) {
                         var values = opts.keys_only ? [] : {},
-                            item, i;
+                            item, i, value;
 
                         if (opts.count) {
                             callback(null, res.rows.item(0).count);
@@ -180,18 +180,17 @@ var Bucket = Bucket || {};
 
                         for (i = 0; i < res.rows.length; i++) {
                             item = res.rows.item(i);
-                            if(item.value){
-                                item.value = JSON.parse(item.value);
-                            }
+
+                            value = item.value && JSON.parse(item.value);
 
                             if (opts.each) {
-                                callback(null, item.key, item.value);
+                                callback(null, item.key, value);
                             }
 
                             if (opts.keys_only) {
                                 values.push(item.key);
                             } else {
-                                values[item.key] = item.value;
+                                values[item.key] = value;
                             }
                         }
 
