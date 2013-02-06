@@ -11,16 +11,15 @@ var Bucket = Bucket || {};
         name: 'WebSQL',
 
         query: function (opts) {
-            if (!this.db) {
-                console.warn('cannot continue, db connection is missing', this);
-                return;
-            }
+            var db = this.db;
 
-            this.db.transaction(
-                function (trans) {
-                    trans.executeSql(opts.sql, opts.sqlArgs, opts.onSuccess, opts.onError);
-                }
-            );
+            this.addEvent('load', function(){
+                db.transaction(
+                    function (trans) {
+                        trans.executeSql(opts.sql, opts.sqlArgs, opts.onSuccess, opts.onError);
+                    }
+                );
+            });
         },
 
         openDB: function (callback) {
@@ -41,12 +40,16 @@ var Bucket = Bucket || {};
                 // right now i disregard version change in WebSQL
                 this.db = openDatabase(this.db_name, '', this.db_name, db_size);
                 // open transaction and try to create a table.
-                this.query({
-                    sql: 'CREATE TABLE IF NOT EXISTS ' + $this.table_name + ' (key PRIMARY KEY, value)',
-                    sqlArgs: [],
-                    onSuccess: onSuccess,
-                    onError: onError
-                });
+                this.db.transaction(
+                    function (trans) {
+                        trans.executeSql(
+                            'CREATE TABLE IF NOT EXISTS ' + $this.table_name + ' (key PRIMARY KEY, value)', 
+                            [], 
+                            onSuccess, 
+                            onError
+                        );
+                    }
+                );
             } catch (e) {
                 callback && callback($this.generateError(e));
             }
@@ -74,8 +77,24 @@ var Bucket = Bucket || {};
         },
 
         clear: function (callback) {
+            var $this = this;
+
             this.logger.log('clear');
-            callback && callback(null);
+
+            try {
+                $this.query({
+                    sql: 'DELETE FROM ' + this.table_name,
+                    sqlArgs: [],
+                    onSuccess: function (trans, res) {
+                        callback && callback(null);
+                    },
+                    onError: function (e) {
+                        callback && callback($this.generateError(e));
+                    }
+                });
+            } catch (e) {
+                callback && callback($this.generateError(e));
+            }
 
             return this.$parent('clear', arguments);
         },
@@ -92,12 +111,12 @@ var Bucket = Bucket || {};
             this.logger.log('exists', key);
 
             var $this = this;
-            
+
             this.fetchAllByRange(function (e, values) {
                 if(!e){
                     callback && callback(null, values !== null && values.length > 0);
                 } else {
-                    callback && callback($this.generateError(e))
+                    callback && callback($this.generateError(e));
                 }
             }, {
                 keys_only: true,
@@ -113,7 +132,7 @@ var Bucket = Bucket || {};
                 sql,
                 keys = [],
                 sqlArgs;
-            
+
             if (opts.count) {
                 columns = 'COUNT (' + columns + ') AS count';
             }
@@ -128,22 +147,22 @@ var Bucket = Bucket || {};
                 } else {
                     keys = opts.where;
                 }
-                
+
                 sqlArgs = keys;
             }
 
             if (opts.where_in) {
                 sql += ' WHERE key IN ( ' + opts.where_in + ' )';
             }
-            
+
             try {
                 $this.query({
                     sql: sql,
                     sqlArgs: sqlArgs,
                     onSuccess: function (trans, res) {
                         var values = opts.keys_only ? [] : {},
-                            item;
-                        
+                            item, i;
+
                         if (opts.count) {
                             callback(null, res.rows.item(0).count);
                             return;
@@ -159,7 +178,7 @@ var Bucket = Bucket || {};
                             return;
                         }
 
-                        for (var i = 0; i < res.rows.length; i++) {
+                        for (i = 0; i < res.rows.length; i++) {
                             item = res.rows.item(i);
                             if(item.value){
                                 item.value = JSON.parse(item.value);
