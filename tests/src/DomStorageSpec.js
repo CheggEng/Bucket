@@ -7,8 +7,8 @@ describe("DomStorage", function () {
 
         driver_const.stores = {};
 
-        tests.getDriver = function () {
-            driver = new Bucket.drivers['DomStorage']({table_name: "dom", db_name: 'Chegg'});
+        tests.getDriver = function (db, table) {
+            driver = new Bucket.drivers['DomStorage']({table_name: table || "dom", db_name: db || 'Chegg'});
             return driver;
         };
 

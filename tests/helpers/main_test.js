@@ -248,6 +248,71 @@ tests.runTests = function runTests() {
         });
     });
 
+
+    it("Should be able to check if falsey values exists", function () {
+        var driver = tests.getDriver(), done = 0;
+
+        driver.addEvent('load', function () {
+            tests.setValues({foo:false}, function () {
+                driver.exists('foo', function (err, flag) {
+                    done++;
+                    expect(flag).toEqual(true, "Value should exist");
+                });
+            });
+        });
+    });
+
+    it("Should support 2 simultaneous databases", function(){
+        var db1 = tests.getDriver('Test', 'test1'),
+            db2 = tests.getDriver('Test', 'test2'),
+            test = {done:0};
+
+        var s = new Stack(
+            function(){
+                test.done++;
+                db1.addEvent('load', this.next);
+            },
+            function(){
+                test.done++;
+                db2.addEvent('load', this.next);
+
+            },
+            function(){
+                test.done++;
+                db1.set('a','a', this.next);
+            },
+            function(){
+                test.done++;
+                db2.set('a','b', this.next);
+            },
+            function(){
+                test.done++;
+                db1.get('a', this.next);
+            },
+            function(err, value){
+                test.done++;
+                test.value1 = value;
+                db2.get('a', this.next);
+            },
+            function(err, value){
+                test.done++;
+
+                expect(test.value1).toEqual('a');
+                expect(value).toEqual('b');
+            }
+        );
+
+        waitsFor(
+            function(){
+                return test.done == 7;
+            },
+            "all steps should have ran",
+            2000
+        );
+
+        s.run();
+    });
+
     /*it("Should have a functioning exists method", function () {
         initTest(2, function (driver) {
             tests.setValues({"arieh":"glazer"}, function () {

@@ -1,7 +1,7 @@
 describe('IndexedDB', function () {
     var db_name = 'Chegg',
         real_table = 'test',
-        table_name = 'Chegg.test',
+        table_name = 'test',
         db_version = 1,
         driver_const = Bucket.drivers['IndexedDB'],
         driver;
@@ -10,10 +10,10 @@ describe('IndexedDB', function () {
 
         driver_const.stores = {};
 
-        tests.getDriver = function () {
+        tests.getDriver = function (db, table) {
             driver = new Bucket.drivers['IndexedDB']({
-                table_name: real_table,
-                db_name: db_name
+                table_name: table || real_table,
+                db_name: db || db_name
             });
             return driver;
         };
@@ -128,38 +128,30 @@ describe('IndexedDB', function () {
             if (!driver) {
                 tests.getDriver();
             }
-                        
-            driver.getDBConnection(function (db) {
-                var trans = db.transaction([table_name], "readwrite"),
-                    store = trans.objectStore(table_name);
 
-                store.clear();
+            driver.addEvent('load', function(){
 
-                trans.oncomplete = function (e) {
-                    cb && cb(null);
-                };
+                driver.getDBConnection(function (db) {
+                    var trans = db.transaction([table_name], "readwrite"),
+                        store = trans.objectStore(table_name);
 
-                trans.onerror = function (e) {
-                    cb && cb(e);
-                };
+                    store.clear();
+
+                    trans.oncomplete = function (e) {
+                        cb && cb(null);
+                    };
+
+                    trans.onerror = function (e) {
+                        cb && cb(e);
+                    };
+                });
+
             });
         };
 
         tests.clear();
     });
+
     tests.runTests();
-
-    it("Should be able to check if falsey values exists", function () {
-        var driver = tests.getDriver(), done = 0;
-
-        driver.addEvent('load', function () {
-            tests.setValues('foo', false, function () {
-                driver.exists('foo', function (err, flag) {
-                    done++;
-                    expect(flag).toEqual(true, "Value should exist");
-                });
-            });
-        });
-    });
 
 });
