@@ -82,7 +82,7 @@ var Bucket = Bucket || {};
 
         exists: function (key, callback) {
             logger.log('exists');
-            callback(null, !!this.store[key]);
+            callback(null, key in this.store);
             return this.$parent('exists', arguments);
         },
 

@@ -313,20 +313,20 @@ tests.runTests = function runTests() {
         s.run();
     });
 
-    /*it("Should have a functioning exists method", function () {
-        initTest(2, function (driver) {
-            tests.setValues({"arieh":"glazer"}, function () {
-                driver.exists('arieh', function (err, exists) {
-                    tests.done++;
-                    expect(exists).toBeTruthy();
-                });
-
-                driver.exists("nir", function (err, exists) {
-                    tests.done++;
-                    expect(exists).toBeFalsy();
-                });
-            });
-        });
-    });*/
+//    it("Should have a functioning exists method", function () {
+//        initTest(2, function (driver) {
+//            tests.setValues({"arieh":"glazer"}, function () {
+//                driver.exists('arieh', function (err, exists) {
+//                    tests.done++;
+//                    expect(exists).toBeTruthy();
+//                });
+//
+//                driver.exists("nir", function (err, exists) {
+//                    tests.done++;
+//                    expect(exists).toBeFalsy();
+//                });
+//            });
+//        });
+//    });
 
 };
