@@ -111,7 +111,7 @@ var Bucket = Bucket || {};
          */
         init: function () {
             // Database properties
-            this.db_name = this.options.db_name;
+            this.db_name = this.options.db_name + "." + this.options.table_name;
             this.table_name = this.options.table_name;
             
             // Init instance's logger
@@ -175,14 +175,6 @@ var Bucket = Bucket || {};
                 trans,
                 store,
                 clear_req;
-
-            if (this.state != driver.STATES.CONNECTED){
-                this.addEvent('load', function(){
-                    this.clear();    
-                }.bind(this));   
-
-                return;
-            }
 
             try {
                 trans = this.db.transaction([this.table_name], driver.TRANS_TYPES.READ_WRITE);

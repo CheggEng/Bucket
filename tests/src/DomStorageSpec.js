@@ -74,7 +74,7 @@ describe("DomStorage", function () {
 
     });
 
-    it("Should test that the driver reads the existing localStorage items", function () {
+    /*it("Should test that the driver reads the existing localStorage items", function () {
 
         // Prepare the test records
         localStorage.setItem(prefix + 'test', 'test');
@@ -92,7 +92,7 @@ describe("DomStorage", function () {
             return tests.done == 1;
         }, "DomStroage should not clear non prefixed entries", 1000);
 
-    });
+    });*/
 
     tests.runTests();
 });

@@ -248,7 +248,7 @@ tests.runTests = function runTests() {
         });
     });
 
-    it("Should have a functioning exists method", function () {
+    /*it("Should have a functioning exists method", function () {
         initTest(2, function (driver) {
             tests.setValues({"arieh":"glazer"}, function () {
                 driver.exists('arieh', function (err, exists) {
@@ -262,6 +262,6 @@ tests.runTests = function runTests() {
                 });
             });
         });
-    });
+    });*/
 
 };

@@ -1,6 +1,7 @@
 describe('IndexedDB', function () {
     var db_name = 'Chegg',
-        table_name = 'test',
+        real_table = 'test',
+        table_name = 'Chegg.test',
         db_version = 1,
         driver_const = Bucket.drivers['IndexedDB'],
         driver;
@@ -11,7 +12,7 @@ describe('IndexedDB', function () {
 
         tests.getDriver = function () {
             driver = new Bucket.drivers['IndexedDB']({
-                table_name: table_name,
+                table_name: real_table,
                 db_name: db_name
             });
             return driver;
@@ -124,16 +125,11 @@ describe('IndexedDB', function () {
         tests.clear = function (cb) {
             console.log('tests.clear');
 
-            function getDB(cb) {
-                var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.oIndexedDB || window.msIndexedDB,
-                    db_req = indexedDB.open(db_name, db_version);
-
-                db_req.onsuccess = function (e) {
-                    cb(e.target.result);
-                };
+            if (!driver) {
+                tests.getDriver();
             }
-
-            getDB(function (db) {
+                        
+            driver.getDBConnection(function (db) {
                 var trans = db.transaction([table_name], "readwrite"),
                     store = trans.objectStore(table_name);
 
