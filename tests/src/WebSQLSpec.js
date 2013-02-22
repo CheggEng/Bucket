@@ -113,6 +113,8 @@ describe('WebSQL', function () {
             console.log('tests.clear');
         };
 
+        tests.stubMethod = function () {};
+
         tests.clear();
     });
     tests.runTests();

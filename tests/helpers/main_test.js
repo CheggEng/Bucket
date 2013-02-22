@@ -1,6 +1,7 @@
 var tests = tests || {};
-tests.runTests = function runTests() {
 
+tests.runTests = function runTests() {
+    tests.cleanup = [];
 
     var
     /* Should return a driver*/
@@ -13,7 +14,7 @@ tests.runTests = function runTests() {
          * @async
          * @return string value
          */
-            getValue = function (key, cb) {
+        getValue = function (key, cb) {
             cb && cb();
         },
 
@@ -22,7 +23,7 @@ tests.runTests = function runTests() {
          *
          * @async
          */
-            setValues = function (map, cb) {
+        setValues = function (map, cb) {
             cb && cb();
         },
 
@@ -31,7 +32,7 @@ tests.runTests = function runTests() {
          * @async
          * @return bool true if any of the keys exists, false otherwise
          */
-            exists = function (keys, cb) {
+        exists = function (keys, cb) {
             cb && cb();
         },
 
@@ -39,10 +40,19 @@ tests.runTests = function runTests() {
          * remove all driver stored items
          * @async
          */
-            clear = function (cb) {
+        clear = function (cb) {
             cb && cb();
+        },
+
+        stubMethod = function (name) {
+            tests.driver[name] = tests.driver[name];
         }
         ;
+
+    function cleanup(){
+        var fn;
+        while (fn = tests.cleanup.pop()) fn();
+    }
 
     function resetTests() {
         tests.getDriver = getDriver;
@@ -50,7 +60,14 @@ tests.runTests = function runTests() {
         tests.setValues = setValues;
         tests.exists = exists;
         tests.clear = clear;
+        tests.stubMethod = stubMethod;
+
+        cleanup();
     }
+
+    tests.clean = cleanup;
+
+    beforeEach(cleanup);
 
     afterEach(resetTests);
 
@@ -317,6 +334,58 @@ tests.runTests = function runTests() {
 
         s.run();
     });
+
+    (function(){
+        var method_map = {
+                set : ['a','b'],
+                get : ['a'],
+                exists : ['a'],
+                getAll : [],
+                getKeys : [],
+                each : [],
+                getLength : [],
+                clear : []
+            },
+            method, args;
+
+        function createTest(method, args) {
+            return function(){
+                initTest(2, function (driver) {
+                    if (driver.name!='IndexedDB'){
+                        tests.done = 2;
+                        return;
+                    }
+
+                    tests.stubMethod(method, driver);
+
+                    driver.setOptions({timeout:200});
+
+                    driver.addEvent('error', function(e){
+                        var err = e.args.error;
+                        if (err.type!=Bucket.Error.TIMEOUT) return;
+                        tests.done++;
+                    });
+
+                    args.push(function(e){
+                        expect(e).toBeTruthy();
+
+                        if (!e) return;
+
+                        expect(e.type).toEqual(Bucket.Error.TIMEOUT);
+                        tests.done++;
+                    });
+
+                    driver[method].apply(driver,args);
+                });
+            }
+        }
+
+        for (method in method_map){
+            args = method_map[method];
+
+            it("Should fire timeout when method " + method + " times out", createTest(method, args));
+        }
+    })();
 
 //    it("Should have a functioning exists method", function () {
 //        initTest(2, function (driver) {

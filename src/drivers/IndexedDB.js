@@ -145,21 +145,44 @@ var Bucket = Bucket || {};
                 method_list = this.wrap,
                 $this = this;
             
-            function wrap(method){
+            function wrap(name,method){
                 $this[name] = function () {
-                    var args = Array.prototype.splice.call(arguments,0);
+                    var timeout,
+                        args= Array.prototype.splice.call(arguments,0),
+                        cb_index ,cb;
+
+                    function run(){
+                        timeout = $this.initTimeout(cb, name);
+                        method.apply($this,args);
+                    }
+
+                    for (cb_index=0; cb = args[cb_index]; cb_index++){
+                        if (typeof cb =='function') break;
+                    }
+
+                    if (!cb){
+                        args.push(function(){
+                            $this.clearTimeout(timeout);
+                        });
+                    }else {
+                        args[cb_index] = function(){
+                            $this.clearTimeout(timeout);
+                            cb.apply(null, arguments);
+                        };
+                    }
+
                     if (this.state === driver.STATES.CONNECTED) {
-                        return method.apply(this, args);
+                        run();
                     } else {
                         this.addEvent('load:once', function () {
-                            method.apply($this, args);
+                            run();
                         });
                     }
                 }.bind($this);
             }
             
             for (i = 0; name = method_list[i]; i++) {
-                wrap(this[name]);
+                wrap(name,this[name]);
             }
         },
         
@@ -291,9 +314,7 @@ var Bucket = Bucket || {};
                 value = null;
 
             function req_onsuccess(e) {
-                if (e.target.result !== undefined) {
-                    value = e.target.result;
-                }
+                callback && callback(null, e.target.result != null);
             }
 
             try {
@@ -302,10 +323,6 @@ var Bucket = Bucket || {};
                 index = store.index('key');
                 get_req = index.getKey(key);
                 get_req.onsuccess = req_onsuccess;
-
-                trans.oncomplete = function (e) {
-                    callback && callback(null, value !== null);
-                };
 
                 trans.onerror = function (e) {
                     callback && callback($this.generateError(e));
@@ -618,6 +635,9 @@ var Bucket = Bucket || {};
             } else if (e.target) {
                 type = driver.ERROR_MAP[e.target.errorCode];
                 msg = (e.target.webkitErrorMessage) ? e.target.webkitErrorMessage : e.target.error.name;
+            }else {
+                type = arguments[0];
+                msg = arguments[1];
             }
 
             return this.$parent('generateError', [type, msg, e]);
@@ -641,6 +661,9 @@ var Bucket = Bucket || {};
     };
     driver.getKeyRange = function () {
         return window.IDBKeyRange || window.webkitIDBKeyRange || window.mozIDBKeyRange || window.oIDBKeyRange || window.msIDBKeyRange;
+    };
+    driver.getObjectStore = function() {
+        return window.IDBObjectStore || window.webkitIDBObjectStore || window.mozIDBObjectStore || window.oIDBObjectStore || window.msIDBObjectStore;
     };
 
     driver.TRANS_TYPES = {
