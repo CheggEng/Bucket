@@ -332,6 +332,7 @@ var Bucket = Bucket || {};
                 trans,
                 store,
                 req,
+                count = 0,
                 empty = true,
                 return_object = true,
                 values = {};
@@ -343,10 +344,26 @@ var Bucket = Bucket || {};
                     empty = false;
                     values[result.key] = JSON.parse(result.value);
                 }
+
+                count++;
+
+                if (count == keys.length) finish();
             }
 
             function req_onerror(e) {
                 callback && callback($this.generateError(e));
+            }
+
+            function finish(){
+                if (empty) {
+                    values = null;
+                }
+
+                else if (return_object === false) {
+                    values = values[key];
+                }
+
+                callback && callback(null, values);
             }
 
             try {
@@ -366,19 +383,6 @@ var Bucket = Bucket || {};
                     req.onerror = req_onerror;
                     req.onsuccess = req_onsuccess;
                 }
-
-                trans.oncomplete = function (e) {
-
-                    if (empty) {
-                        values = null;
-                    }
-
-                    else if (return_object === false) {
-                        values = values[key];
-                    }
-
-                    callback && callback(null, values);
-                };
             } catch (e) {
                 callback && callback($this.generateError(e));
             }

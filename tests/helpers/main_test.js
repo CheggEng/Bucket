@@ -117,8 +117,7 @@ tests.runTests = function runTests() {
     });
 
     it("Should get values properly", function () {
-        initTest(3, function (driver) {
-
+        initTest(4, function (driver) {
             tests.setValues({"arieh":"glazer", "nir":"geier", "yehuda":"gilad"}, function () {
                 tests.done++;
 
@@ -128,9 +127,15 @@ tests.runTests = function runTests() {
                     tests.done++;
                 });
 
-                driver.get(["nir", "yehuda"], function (err, map) {
+                driver.get(["nir", "yehuda", "shahaf"], function (err, map) {
                     expect(err).toEqual(null, "there should be no error");
                     expect(JSON.stringify(map)).toEqual(JSON.stringify({"nir":"geier", "yehuda":"gilad"}));
+                    tests.done++;
+                });
+
+                driver.get('shahaf', function(err, value){
+                    expect(err).toEqual(null, "there should be no error");
+                    expect(value).toEqual(null);
                     tests.done++;
                 });
             });
