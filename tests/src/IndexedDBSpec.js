@@ -2,7 +2,6 @@ describe('IndexedDB', function () {
     var db_name = 'Chegg',
         real_table = 'test',
         table_name = 'test',
-        db_version = 1,
         driver_const = Bucket.drivers['IndexedDB'],
         idb_proto = driver_const.getObjectStore().prototype,
         driver;
@@ -153,19 +152,26 @@ describe('IndexedDB', function () {
         };
 
         tests.stubMethod = function (name, driver) {
+            /*
+                stub map. key is method name. value is which internal method to stub
+                value can be either a method name (string) or and array
+                array structure:
+                    [ method_name, returned_value [, replace_transaction_object] ]
+
+             */
             var map = {
                     set : 'put',
                     getLength : 'count',
                     remove : 'delete',
-                    getAll : ['openCursor',{},true],
-                    getKeys : ['openCursor',{},true],
+                    getAll : ['openCursor', {} ,true],
+                    getKeys : ['openCursor', {} ,true],
                     exists : ['index',{
-                        getKey : function(){
+                        getKey : function () {
                             return {};
                         }
                     }],
-                    each : ['openCursor',{},true],
-                    clear : ['clear',{},true]
+                    each : ['openCursor', {}, true],
+                    clear : ['clear', {}, true]
                 },
                 method = map[name] || name,
                 method_name = method instanceof Array ? method[0] : method,
