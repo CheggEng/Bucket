@@ -351,7 +351,7 @@ tests.runTests = function runTests() {
         function createTest(method, args) {
             return function(){
                 initTest(2, function (driver) {
-                    if (driver.name!='IndexedDB'){
+                    if (driver.name == 'DomStorage'){
                         tests.done = 2;
                         return;
                     }

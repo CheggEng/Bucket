@@ -11,9 +11,24 @@ var Bucket = Bucket || {};
         name: 'WebSQL',
 
         query: function (opts) {
-            var db = this.db;
+            var db = this.db,
+                $this = this;
 
             this.addEvent('load', function(){
+                var timeout = $this.initTimeout(opts.onError),
+                    error  = opts.onError,
+                    success = opts.onSuccess;
+
+                opts.onSuccess = function(trans, res){
+                    $this.clearTimeout(timeout);
+                    success(trans,res);
+                };
+
+                opts.onError = function(e){
+                    $this.clearTimeout(timeout);
+                    error(e);
+                };
+
                 db.transaction(
                     function (trans) {
                         trans.executeSql(opts.sql, opts.sqlArgs, opts.onSuccess, opts.onError);
@@ -341,6 +356,14 @@ var Bucket = Bucket || {};
             callback && this.fetchAllByRange(callback, {count: true});
 
             return this.$parent('getLength', arguments);
+        },
+
+        generateError : function(e){
+            if (e.name == 'Bucket Error'){
+                return e;
+            }
+
+            return this.$parent('generateError',[e]);
         },
 
         destroy: function () {
