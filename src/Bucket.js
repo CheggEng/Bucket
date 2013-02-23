@@ -6,14 +6,14 @@ var Bucket = Bucket || {};
      */
 
     /**
-     * This clas represents a data store
+     * This class represents a data store
      *
      * @class Bucket
      * @constructor
      *
      * @param {object} options
-     *  @param {array} [options.drivers] a list of prioritized driver names to choose from
-     *  @param {object} options.driver_options parameters to pass to the driver
+     *  @param {object} options.driver_options parameters to pass to the driver. See {{#crossLink "Driver/defaultOptions:property"}}{{/crossLink}}
+     *  @param {Array} [options.drivers] a list of prioritized driver names to choose from
      */
     function Bucket(options) {
         var driver = Bucket.choose(options.drivers);
@@ -21,10 +21,11 @@ var Bucket = Bucket || {};
     }
 
     utils.merge(Bucket, ns);
+
     /**
      * a stack of all registered driver names
      * @property stack
-     * @type {array}
+     * @type {Array}
      * @private
      */
     Bucket.stack = [];
@@ -39,8 +40,8 @@ var Bucket = Bucket || {};
 
     /**
      * a reference to the last automatically chosen driver
-     * @propert chosen_driver
-     * @type {ns.Driver}
+     * @property chosen_driver
+     * @type {Driver}
      * @private
      */
     Bucket.chosen_driver = null;
@@ -52,7 +53,7 @@ var Bucket = Bucket || {};
      * @method choose
      * @static
      *
-     * @param {array} [list] if provided, will choose a driver from that list
+     * @param {Array} [list] if provided, will choose a driver from that list
      *
      * @return ns.Driver
      */
@@ -84,7 +85,7 @@ var Bucket = Bucket || {};
      * @static
      *
      * @param {string} name
-     * @param {object} props a list of methods and properties for the new driver
+     * @param {object} params a list of methods and properties for the new driver. See {{#crossLink "Driver"}}{{/crossLink}} for more info.
      *
      * @return {Driver} the new driver
      */
@@ -117,12 +118,14 @@ var Bucket = Bucket || {};
     /**
      * Aliases a drivers name
      *
+     * @method alias
+     *
      * @param {string} alias
      * @param {string} name
      *
      * @static
      *
-     * @return {Bucket.Driver} aliased driver
+     * @return {Driver} aliased driver
      */
     Bucket.alias = function (alias, name) {
         Bucket.drivers[alias] = Bucket.drivers[name];
@@ -133,7 +136,7 @@ var Bucket = Bucket || {};
     /**
      * @class Bucket.Error
      * @constructor
-     * @extend Error
+     * @extends Error
      */
     Bucket.Error = function (type, msg, original_error) {
         this.name = 'Bucket Error';
@@ -141,6 +144,7 @@ var Bucket = Bucket || {};
         this.message = msg;
         this.original = original_error;
     };
+
     Bucket.Error.prototype = new Error();
     Bucket.Error.prototype.constructor = Bucket.Error;
     Bucket.Error.prototype.toString = function () {
@@ -150,16 +154,20 @@ var Bucket = Bucket || {};
     /**
      * Default error
      * @property DEFAULT
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.DEFAULT_ERR = "DEFAULT";
 
     /**
      * Signifies an error that happened due to database size limit overflow
      * @property QUOTA_ERR
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.QUOTA_ERR = "QUOTA";
 
@@ -167,8 +175,10 @@ var Bucket = Bucket || {};
      * Signifies an error that happened due to an action that was not permitted
      *
      * @property PERMISSION_ERR
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.PERMISSION_ERR = "PERMISSION";
 
@@ -176,8 +186,10 @@ var Bucket = Bucket || {};
      * Signifies an error that happened due to an action that violated DB constraints
      *
      * @property CONSTRAINT_ERR
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.CONSTRAINT_ERR = "CONSTRAINT";
 
@@ -185,16 +197,20 @@ var Bucket = Bucket || {};
      * Signifies an error that happened due to a missing table, objectStore;
      *
      * @property NOTFOUND_ERR
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.NOT_FOUND_ERR = "NOTFOUND";
 
     /**
      * Timeout Error
      * @property TIMEOUT
+     * @type {String}
+     * @readOnly
      * @static
-     * @const
+     * @final
      */
     Bucket.Error.TIMEOUT = "TIMEOUT";
 

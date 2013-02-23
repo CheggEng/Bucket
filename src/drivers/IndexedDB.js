@@ -1,16 +1,17 @@
 var Bucket = Bucket || {};
 
 !function (ns, utils) {
+    /**
+     * @module Driver.IndexedDB
+     */
 
     var driver,
         db_version = 1;
 
     /**
-     * @module Driver.IndexedDB
-     *
+     * @class Driver.IndexedDB
      *
      * @constructor
-     * @class IndexedDB
      * @extends Driver
      */
     driver = Bucket.registerDriver('IndexedDB', {
@@ -104,11 +105,7 @@ var Bucket = Bucket || {};
                 callback && callback($this.generateError(e));
             };
         },
-        
-        /**
-         *
-         * @return {*}
-         */
+
         init: function () {
             // Database properties
             this.db_name = this.options.db_name + "." + this.options.table_name;
@@ -136,9 +133,6 @@ var Bucket = Bucket || {};
             return this;
         },
 
-        /**
-         *
-         */
         wrapMethods: function () {
             var i,
                 name,
@@ -185,12 +179,7 @@ var Bucket = Bucket || {};
                 wrap(name,this[name]);
             }
         },
-        
-        /**
-         *
-         * @param callback
-         * @return {*}
-         */
+
         clear: function (callback) {
             this.logger.log('clear');
 
@@ -228,11 +217,6 @@ var Bucket = Bucket || {};
             return this.$parent('clear', arguments);
         },
 
-        /**
-         * fetchByKeyRange used to fetch items by provided key_range object
-         * @param each (Boolean) if set to true, callback is fired on each cursor iteration, if set to false callback is fired once in translation complete event.
-         * @param callback
-         */
         fetchByKeyRange: function (callback, each, key_range) {
             var $this = this,
                 cursor,
@@ -284,11 +268,6 @@ var Bucket = Bucket || {};
             callback && this.fetchByKeyRange(callback, each, null);
         },
 
-        /**
-         *
-         * @param callback
-         * @return {*}
-         */
         each: function (callback) {
             this.logger.log('each');
 
@@ -297,12 +276,6 @@ var Bucket = Bucket || {};
             return this.$parent('each', arguments);
         },
 
-        /**
-         *
-         * @param key
-         * @param callback
-         * @return {*}
-         */
         exists: function (key, callback) {
             this.logger.log('exists', key);
 
@@ -310,8 +283,7 @@ var Bucket = Bucket || {};
                 trans,
                 store,
                 index,
-                get_req,
-                value = null;
+                get_req;
 
             function req_onsuccess(e) {
                 callback && callback(null, e.target.result != null);
@@ -334,12 +306,6 @@ var Bucket = Bucket || {};
             return this.$parent('exists', arguments);
         },
 
-        /**
-         *
-         * @param key
-         * @param callback
-         * @return {*}
-         */
         get: function (key, callback) {
             this.logger.log('get', key);
 
@@ -407,11 +373,6 @@ var Bucket = Bucket || {};
             return this.$parent('get', arguments);
         },
 
-        /**
-         *
-         * @param callback
-         * @return {*}
-         */
         getAll: function (callback) {
             this.logger.log('getAll');
 
@@ -420,11 +381,6 @@ var Bucket = Bucket || {};
             return this.$parent('getAll', arguments);
         },
 
-        /**
-         *
-         * @param callback
-         * @return {*}
-         */
         getKeys: function (callback) {
             this.logger.log('getKeys');
 
@@ -448,12 +404,6 @@ var Bucket = Bucket || {};
             return this.$parent('getKeys', arguments);
         },
 
-        /**
-         *
-         * @param key
-         * @param callback
-         * @return {*}
-         */
         remove: function (key, callback) {
             this.logger.log('remove', key);
 
@@ -505,13 +455,6 @@ var Bucket = Bucket || {};
             return this.$parent('remove', arguments);
         },
 
-        /**
-         *
-         * @param key
-         * @param value
-         * @param callback
-         * @return {*}
-         */
         set: function (key, value, callback) {
             this.logger.log('set', key, value);
 
@@ -572,10 +515,6 @@ var Bucket = Bucket || {};
             return this.$parent('set', arguments);
         },
 
-        /**
-         *
-         * @return {Boolean}
-         */
         test: function () {
             var result = !!driver.getDB();
             
@@ -590,11 +529,6 @@ var Bucket = Bucket || {};
             return result;
         },
 
-        /**
-         * This method return the length of all keys in the objectStore
-         * @param callback
-         * @return {*}
-         */
         getLength: function (callback) {
             this.logger.log('getLength');
 
@@ -644,12 +578,14 @@ var Bucket = Bucket || {};
         },
 
         destroy: function () {
+            var err;
             try {
-                return this.db.close();
+                this.db.close();
             } catch (e) {
-                return this.generateError(e);
+                err = this.generateError(e);
             }
 
+            return this.$parent('destroy',{error:err});
         }
     });
 
