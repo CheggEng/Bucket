@@ -3,28 +3,21 @@ var Bucket = Bucket || {};
 !function (ns, utils) {
 
     /**
-     * @module Driver.DomStorage
+     * @module Driver.LocalStorage
      */
 
     var logger = ns.Logger.getLogger("LocalStorage", ns.Logger.logLevels.ERROR),
         driver;
 
     /**
-     * This driver is the implementation of DomStorage storage.<br/>
-     * The DomStorage storage store all the data as Object (JSON) as key:value.<br/>
-     * The driver also store all its key-value in local variable named store in order to improve performance.<br/>
-     * The above store object contain the parsed data so it can be used as soon as we get the value and no prase
-     * need to be done on the JSON data.
-     *
-     * TODO: Right now we have unknown memory limitation<br/>
+     * @class Driver.LocalStorage
      *
      * @constructor
-     * @class DomStorage
      * @extends Driver
      **/
     driver = Bucket.registerDriver('LocalStorage', {
 
-        name: 'DomStorage',
+        name: 'LocalStorage',
 
         init: function () {
             var keys;
@@ -188,10 +181,11 @@ var Bucket = Bucket || {};
 
         destroy: function () {
             this.store = null;
+            return this.$parent('destroy');
         }
     });
     
-    Bucket.alias("DomStorage", "LocalStorage");
+    Bucket.alias("LocalStorage", "DomStorage");
 
     driver.stores = {};
 }.apply(Bucket, [Bucket, Bucket.utils]);
