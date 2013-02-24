@@ -7,9 +7,26 @@ var Bucket = Bucket || {};
 
     var driver;
 
+    /**
+     * @class Driver.WebSQL
+     *
+     * @extends Driver
+     * @constructor
+     */
     driver = Bucket.registerDriver('WebSQL', {
         name: 'WebSQL',
 
+        /**
+         * queries commands to the database
+         *
+         * @method query
+         *
+         * @param opts
+         *  @param {Function} opts.onSuccess callback to execute when query is successful
+         *  @param {Function} opts.onError   callback to execute when query initiated an error
+         *  @param {String}   opts.sql       sql to execute
+         *  @param {Array}    opts.sqlArgs   arguments to send with the query
+         */
         query: function (opts) {
             var db = this.db,
                 $this = this;
@@ -353,9 +370,6 @@ var Bucket = Bucket || {};
         },
 
         getLength: function (callback) {
-
-            var $this = this;
-
             callback && this.fetchAllByRange(callback, {count: true});
 
             return this.$parent('getLength', arguments);
@@ -366,11 +380,7 @@ var Bucket = Bucket || {};
                 return e;
             }
 
-            return this.$parent('generateError',[e]);
-        },
-
-        destroy: function () {
-            // delete any local var or close db connection
+            return this.$parent('generateError',[null, e.message, e]);
         }
     });
 

@@ -1,10 +1,10 @@
 {
     "name":"Bucket",
-    "description":"Cross browser/Platform local local storage mechanism",
-    "version":"0.0.1",
-    "url":"http://example.com/",
+    "description":"Cross browser/Platform client side storage mechanism",
+    "version":"1.0b",
+    "url":"https://github.com/CheggEng/Bucket",
     "options":{
-        "outdir":"docs/apidocs",
+        "outdir":"docs/",
         "paths": "src"
     }
 }

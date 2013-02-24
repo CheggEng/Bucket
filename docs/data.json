@@ -1,0 +1,1366 @@
+{
+    "project": {
+        "name": "Bucket",
+        "description": "Cross browser/Platform client side storage mechanism",
+        "version": "1.0b",
+        "url": "https://github.com/CheggEng/Bucket"
+    },
+    "files": {
+        "src/Events/Events.js": {
+            "name": "src/Events/Events.js",
+            "modules": {
+                "Events": 1
+            },
+            "classes": {
+                "Events": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/common/Logger.js": {
+            "name": "src/common/Logger.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/common/utils.js": {
+            "name": "src/common/utils.js",
+            "modules": {},
+            "classes": {
+                "utils.Bind": 1,
+                "utils.Options": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/drivers/IndexedDB.js": {
+            "name": "src/drivers/IndexedDB.js",
+            "modules": {
+                "Driver.IndexedDB": 1
+            },
+            "classes": {
+                "Driver.IndexedDB": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/drivers/LocalStorage.js": {
+            "name": "src/drivers/LocalStorage.js",
+            "modules": {
+                "Driver.LocalStorage": 1
+            },
+            "classes": {
+                "Driver.LocalStorage": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/drivers/WebSQL.js": {
+            "name": "src/drivers/WebSQL.js",
+            "modules": {
+                "Driver.WebSQL": 1
+            },
+            "classes": {
+                "Driver.WebSQL": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/drivers/_Template.js": {
+            "name": "src/drivers/_Template.js",
+            "modules": {
+                "Driver.Template": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/Bucket.js": {
+            "name": "src/Bucket.js",
+            "modules": {
+                "Bucket": 1
+            },
+            "classes": {
+                "Bucket": 1,
+                "Bucket.Error": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/Driver.js": {
+            "name": "src/Driver.js",
+            "modules": {
+                "Driver": 1
+            },
+            "classes": {
+                "Driver": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "Events": {
+            "name": "Events",
+            "submodules": {},
+            "classes": {
+                "Events": 1,
+                "utils.Bind": 1,
+                "utils.Options": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/common/utils.js",
+            "line": 29
+        },
+        "Driver.IndexedDB": {
+            "name": "Driver.IndexedDB",
+            "submodules": {},
+            "classes": {
+                "Driver.IndexedDB": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/drivers/IndexedDB.js",
+            "line": 11
+        },
+        "Driver.LocalStorage": {
+            "name": "Driver.LocalStorage",
+            "submodules": {},
+            "classes": {
+                "Driver.LocalStorage": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/drivers/LocalStorage.js",
+            "line": 12
+        },
+        "Driver.WebSQL": {
+            "name": "Driver.WebSQL",
+            "submodules": {},
+            "classes": {
+                "Driver.WebSQL": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/drivers/WebSQL.js",
+            "line": 10
+        },
+        "Driver.Template": {
+            "name": "Driver.Template",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/drivers/_Template.js",
+            "line": 4
+        },
+        "Bucket": {
+            "name": "Bucket",
+            "submodules": {},
+            "classes": {
+                "Bucket": 1,
+                "Bucket.Error": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/Bucket.js",
+            "line": 136
+        },
+        "Driver": {
+            "name": "Driver",
+            "submodules": {},
+            "classes": {
+                "Driver": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/Driver.js",
+            "line": 7
+        }
+    },
+    "classes": {
+        "Events": {
+            "name": "Events",
+            "shortname": "Events",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Driver"
+            ],
+            "module": "Events",
+            "namespace": "",
+            "file": "src/Events/Events.js",
+            "line": 124,
+            "description": "Events Provider.\n\nCan function either as a standalone or a Mixin",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "el",
+                    "description": "element to use as event target. Optional",
+                    "type": "Element"
+                }
+            ]
+        },
+        "utils.Bind": {
+            "name": "utils.Bind",
+            "shortname": "utils.Bind",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Driver"
+            ],
+            "module": "Events",
+            "namespace": "",
+            "file": "src/common/utils.js",
+            "line": 6,
+            "description": "generates a bound function collection, using an object's bind array propery",
+            "is_constructor": 1
+        },
+        "utils.Options": {
+            "name": "utils.Options",
+            "shortname": "utils.Options",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Driver"
+            ],
+            "module": "Events",
+            "namespace": "",
+            "file": "src/common/utils.js",
+            "line": 29,
+            "description": "A simple mixin for managing an options argument. Mixin uses the defaultOptions property to identify default options.\nMixin also automatically identify on* properties as events and assigns them",
+            "is_constructor": 1
+        },
+        "Driver.IndexedDB": {
+            "name": "Driver.IndexedDB",
+            "shortname": "Driver.IndexedDB",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Driver.IndexedDB",
+            "namespace": "",
+            "file": "src/drivers/IndexedDB.js",
+            "line": 11,
+            "is_constructor": 1,
+            "extends": "Driver"
+        },
+        "Driver.LocalStorage": {
+            "name": "Driver.LocalStorage",
+            "shortname": "Driver.LocalStorage",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Driver.LocalStorage",
+            "namespace": "",
+            "file": "src/drivers/LocalStorage.js",
+            "line": 12,
+            "is_constructor": 1,
+            "extends": "Driver"
+        },
+        "Driver.WebSQL": {
+            "name": "Driver.WebSQL",
+            "shortname": "Driver.WebSQL",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Driver.WebSQL",
+            "namespace": "",
+            "file": "src/drivers/WebSQL.js",
+            "line": 10,
+            "extends": "Driver",
+            "is_constructor": 1
+        },
+        "Bucket": {
+            "name": "Bucket",
+            "shortname": "Bucket",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Bucket",
+            "namespace": "",
+            "file": "src/Bucket.js",
+            "line": 8,
+            "description": "This class represents a data store",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object",
+                    "props": [
+                        {
+                            "name": "driver_options",
+                            "description": "parameters to pass to the driver. See {{#crossLink \"Driver/defaultOptions:property\"}}{{/crossLink}}",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "drivers",
+                            "description": "a list of prioritized driver names to choose from",
+                            "type": "Array",
+                            "optional": true
+                        }
+                    ]
+                }
+            ]
+        },
+        "Bucket.Error": {
+            "name": "Bucket.Error",
+            "shortname": "Bucket.Error",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Bucket",
+            "namespace": "",
+            "file": "src/Bucket.js",
+            "line": 136,
+            "is_constructor": 1,
+            "extends": "Error"
+        },
+        "Driver": {
+            "name": "Driver",
+            "shortname": "Driver",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "Driver",
+            "namespace": "",
+            "file": "src/Driver.js",
+            "line": 7,
+            "description": "This is the skeleton Driver class.\nThe class will be used as the base class for all the drivers implementation",
+            "uses": [
+                "Events",
+                "utils.Options",
+                "utils.Bind"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "options",
+                    "description": "",
+                    "props": [
+                        {
+                            "name": "table",
+                            "description": "will be used as key identifier between db instances",
+                            "type": "String"
+                        },
+                        {
+                            "name": "db_name",
+                            "description": "can be used as an additional identifier to differentiate between instances",
+                            "type": "String",
+                            "optional": true
+                        },
+                        {
+                            "name": "db_size",
+                            "description": "can be used in cases where db allows setting size limit (not consistent)",
+                            "type": "Int",
+                            "optional": true
+                        },
+                        {
+                            "name": "timeout",
+                            "description": "how long to wait after a query has fired before timing out the request",
+                            "type": "Int",
+                            "optional": true,
+                            "optdefault": "5000"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/Events/Events.js",
+            "line": 35,
+            "description": "removes the on* prefix from event names",
+            "itemtype": "method",
+            "name": "Events.removeOn",
+            "static": 1,
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 50,
+            "description": "returns a structured data object about a type's pseudo-events",
+            "itemtype": "method",
+            "name": "getPseudo",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "data",
+                "type": "Object"
+            },
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 73,
+            "description": "proccesses an event type, returning a valid data object from that name",
+            "itemtype": "method",
+            "name": "processType",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "data",
+                "type": "Object"
+            },
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 87,
+            "description": "cross-browser function to create event object for fire method\n\nCreated object will always have following properties:\n - dispatcher: a reference to dispatching object (since we can't use 'this')\n - args: arguments passed alongside the event\n - object_event: a flag set to true to easily check if this is an object event or a normal DOM event.",
+            "itemtype": "method",
+            "name": "Events.createEvent",
+            "static": 1,
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "dispatcher",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "args",
+                    "description": "",
+                    "type": "Mixed"
+                }
+            ],
+            "return": {
+                "description": "event object"
+            },
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 276,
+            "description": "Adds an event",
+            "itemtype": "method",
+            "name": "addEvent",
+            "params": [
+                {
+                    "name": "the",
+                    "description": "event type",
+                    "type": "String"
+                },
+                {
+                    "name": "a",
+                    "description": "function to add",
+                    "type": "Function"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 306,
+            "description": "Helper to add multiple events at once",
+            "itemtype": "method",
+            "name": "addEvents",
+            "params": [
+                {
+                    "name": "literal",
+                    "description": "object of event types => callbacks",
+                    "type": "Object"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 325,
+            "description": "dispatches an event",
+            "itemtype": "method",
+            "name": "fireEvent",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "type",
+                    "type": "String"
+                },
+                {
+                    "name": "arguments",
+                    "description": "to pass with the event",
+                    "type": "Mixed"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 364,
+            "description": "removes a function from an event",
+            "itemtype": "method",
+            "name": "removeEvent",
+            "params": [
+                {
+                    "name": "event",
+                    "description": "type",
+                    "type": "String"
+                },
+                {
+                    "name": "function",
+                    "description": "to remove from stack",
+                    "type": "Function"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 387,
+            "description": "Adds an event for one execution, then removes it",
+            "itemtype": "method",
+            "name": "addEventOnce",
+            "params": [
+                {
+                    "name": "the",
+                    "description": "event type",
+                    "type": "String"
+                },
+                {
+                    "name": "a",
+                    "description": "function to add",
+                    "type": "Function"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/Events/Events.js",
+            "line": 409,
+            "description": "Fires a latched event",
+            "itemtype": "method",
+            "name": "fireLatchedEvent",
+            "params": [
+                {
+                    "name": "the",
+                    "description": "event type",
+                    "type": "String"
+                },
+                {
+                    "name": "arguments",
+                    "description": "to pass with the event",
+                    "type": "Mixed"
+                }
+            ],
+            "chainable": 1,
+            "class": "Events",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/Logger.js",
+            "line": 69,
+            "description": "Logger Class.\nCreates a logger.",
+            "params": [
+                {
+                    "name": "loggerName",
+                    "description": "Name of the logger. If a logger with supplied name\nalready exists, that logger instance is returned and its level will be updated\nto a passed level or will stay with old level if level parameter wasn't passed.",
+                    "type": "String"
+                },
+                {
+                    "name": "level",
+                    "description": "Debug level of the logger.",
+                    "type": "Logger.logLevels ENUM"
+                }
+            ],
+            "class": "utils.Bind",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/utils.js",
+            "line": 14,
+            "description": "holds the generated bound function collection",
+            "itemtype": "property",
+            "name": "bound",
+            "access": "protected",
+            "tagname": "",
+            "type": "object",
+            "class": "utils.Bind",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/utils.js",
+            "line": 45,
+            "itemtype": "method",
+            "name": "setOptions",
+            "params": [
+                {
+                    "name": "options",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "chainable": 1,
+            "class": "utils.Options",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/utils.js",
+            "line": 61,
+            "description": "this property will be used to identify default options",
+            "itemtype": "property",
+            "name": "defaultOptions",
+            "access": "protected",
+            "tagname": "",
+            "class": "utils.Options",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/utils.js",
+            "line": 68,
+            "description": "this method acts like merge, only that it only merges properties of the original object\n\n_Creates a new object rather than actually merge_",
+            "itemtype": "method",
+            "name": "setOptions",
+            "static": 1,
+            "params": [
+                {
+                    "name": "defaults",
+                    "description": "a map of default properties",
+                    "type": "Object"
+                },
+                {
+                    "name": "options",
+                    "description": "a map of values to merge",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "new merged object",
+                "type": "Object"
+            },
+            "class": "utils.Options",
+            "module": "Events"
+        },
+        {
+            "file": "src/common/utils.js",
+            "line": 124,
+            "description": "merges a list of objects into a single object",
+            "itemtype": "method",
+            "name": "merge",
+            "static": 1,
+            "params": [
+                {
+                    "name": "target",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "obj",
+                    "description": "an object to merge (can be an infinite list of objects)",
+                    "type": "Object",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "merged object",
+                "type": "Object"
+            },
+            "class": "utils.Options",
+            "module": "Events"
+        },
+        {
+            "file": "src/drivers/WebSQL.js",
+            "line": 19,
+            "description": "queries commands to the database",
+            "itemtype": "method",
+            "name": "query",
+            "params": [
+                {
+                    "name": "opts",
+                    "description": "",
+                    "props": [
+                        {
+                            "name": "onSuccess",
+                            "description": "callback to execute when query is successful",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "onError",
+                            "description": "callback to execute when query initiated an error",
+                            "type": "Function"
+                        },
+                        {
+                            "name": "sql",
+                            "description": "sql to execute",
+                            "type": "String"
+                        },
+                        {
+                            "name": "sqlArgs",
+                            "description": "arguments to send with the query",
+                            "type": "Array"
+                        }
+                    ]
+                }
+            ],
+            "class": "Driver.WebSQL",
+            "module": "Driver.WebSQL"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 25,
+            "description": "a stack of all registered driver names",
+            "itemtype": "property",
+            "name": "stack",
+            "type": "{Array}",
+            "access": "private",
+            "tagname": "",
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 33,
+            "description": "a named list of all registered drivers",
+            "itemtype": "property",
+            "name": "drivers",
+            "type": "{object}",
+            "access": "private",
+            "tagname": "",
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 41,
+            "description": "a reference to the last automatically chosen driver",
+            "itemtype": "property",
+            "name": "chosen_driver",
+            "type": "{Driver}",
+            "access": "private",
+            "tagname": "",
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 49,
+            "description": "chooses a driver to use.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "choose",
+            "static": 1,
+            "params": [
+                {
+                    "name": "list",
+                    "description": "if provided, will choose a driver from that list",
+                    "type": "Array",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "ns.Driver"
+            },
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 80,
+            "description": "Registers a driver.<br/>\nA driver must always have a <b>test</b> method<br/>",
+            "itemtype": "method",
+            "name": "registerDriver",
+            "static": 1,
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "params",
+                    "description": "a list of methods and properties for the new driver. See {{#crossLink \"Driver\"}}{{/crossLink}} for more info.",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "the new driver",
+                "type": "Driver"
+            },
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 118,
+            "description": "Aliases a drivers name",
+            "itemtype": "method",
+            "name": "alias",
+            "params": [
+                {
+                    "name": "alias",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "static": 1,
+            "return": {
+                "description": "aliased driver",
+                "type": "Driver"
+            },
+            "class": "Bucket",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 154,
+            "description": "Default error",
+            "itemtype": "property",
+            "name": "DEFAULT",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 164,
+            "description": "Signifies an error that happened due to database size limit overflow",
+            "itemtype": "property",
+            "name": "QUOTA_ERR",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 174,
+            "description": "Signifies an error that happened due to an action that was not permitted",
+            "itemtype": "property",
+            "name": "PERMISSION_ERR",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 185,
+            "description": "Signifies an error that happened due to an action that violated DB constraints",
+            "itemtype": "property",
+            "name": "CONSTRAINT_ERR",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 196,
+            "description": "Signifies an error that happened due to a missing table, objectStore;",
+            "itemtype": "property",
+            "name": "NOTFOUND_ERR",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Bucket.js",
+            "line": 207,
+            "description": "Timeout Error",
+            "itemtype": "property",
+            "name": "TIMEOUT",
+            "type": "{String}",
+            "readonly": "",
+            "static": 1,
+            "final": 1,
+            "class": "Bucket.Error",
+            "module": "Bucket"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 31,
+            "itemtype": "event",
+            "name": "load",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 35,
+            "itemtype": "event",
+            "name": "error",
+            "params": [
+                {
+                    "name": "args",
+                    "description": "",
+                    "props": [
+                        {
+                            "name": "error",
+                            "description": "",
+                            "type": "Bucket.Error"
+                        }
+                    ]
+                }
+            ],
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 42,
+            "itemtype": "event",
+            "name": "destroy",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 49,
+            "description": "contains a list of default options for the driver",
+            "itemtype": "property",
+            "name": "defaultOptions",
+            "type": "{object}",
+            "access": "protected",
+            "tagname": "",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 62,
+            "description": "The driver name.",
+            "itemtype": "property",
+            "name": "name",
+            "type": "{String}",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 70,
+            "description": "The storage prefix to allow same keys from different components.<br/>",
+            "itemtype": "property",
+            "name": "prefix",
+            "access": "protected",
+            "tagname": "",
+            "type": "{String}",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 78,
+            "description": "Delete all the records from the storage\n\n<pre><code>\n  clear(function callback(Error|null))\n  </code>\n</pre>",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "clear",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "- A callback function that will be invoked after the clear.",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 96,
+            "description": "Run the callback method on all the storage items.\n\n<pre><code>\n  each(function callback(Error|null, String key, String value)\n  </code>\n</pre>",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "each",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "- A callback function that will handle the results.\n                             The callback parameters are (key, value)",
+                    "type": "Function"
+                }
+            ],
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 115,
+            "description": "Check to see if the given key already exist in the Storage\n<pre><code>\n  exists(String key, function callback(Error|null, boolean)\n</code>\n</pre>",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "exists",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "- The key of the item we want to check if exits",
+                    "type": "String"
+                },
+                {
+                    "name": "callback",
+                    "description": "- A callback function that will handle the results.\n                             The callback parameters are (key, value)",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "exists - true/false if the key exists or not",
+                "type": "Boolean"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 136,
+            "description": "Retrieve item or items from the storage.",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "keys",
+                    "description": "which key/keys we want to retrieve",
+                    "type": "String|Array"
+                },
+                {
+                    "name": "callback",
+                    "description": "A callback function that will handle the results.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "if was asked for a collection of values, return a map, otherwise return a string",
+                "type": "String|Object"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 153,
+            "description": "get all items.\n\n<pre><code>\n  getAll(function callback(Error|null, Object records))\n    </code>\n</pre>",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "getAll",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "- A callback function for processing the records",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "key=>value map",
+                "type": "Object"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 172,
+            "description": "get all keys.\n\n<pre><code>\n  getKeys(function callback(Error|null, Array keys))\n    </code>\n</pre>",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "getKeys",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "- A callback function for processing the keys",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "an array of key names",
+                "type": "Array"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 192,
+            "description": "This method will be init the Driver.\n\nAny initialization code should be place here",
+            "itemtype": "method",
+            "name": "init",
+            "access": "protected",
+            "tagname": "",
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 203,
+            "description": "Remove items from the storage",
+            "example": [
+                "\n<pre><code>\n  remove(String|Array [, function(Error|null)]) - remove the given key(s) from the storage\n    </code>\n</pre>"
+            ],
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "remove",
+            "params": [
+                {
+                    "name": "keys",
+                    "description": "- The key(s) of the item we want to remove",
+                    "type": "String|Array"
+                },
+                {
+                    "name": "callback",
+                    "description": "",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 223,
+            "description": "Add a new item(s) to the storage.\nIf the key is already in the store it will be updated.",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "if string, will be used as a key name. If object, will be used as a key=>value map",
+                    "type": "String|Object"
+                },
+                {
+                    "name": "value",
+                    "description": "key value (only used in case of singular set)",
+                    "type": "String",
+                    "optional": true
+                },
+                {
+                    "name": "cb",
+                    "description": "will be called when action is done",
+                    "type": "Function",
+                    "optional": true
+                }
+            ],
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 239,
+            "description": "returns the number of items in the store",
+            "async": 1,
+            "chainable": 1,
+            "itemtype": "method",
+            "name": "getLength",
+            "params": [
+                {
+                    "name": "cb",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Number"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 255,
+            "itemtype": "method",
+            "name": "destroy",
+            "chainable": 1,
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 265,
+            "description": "Test method to check if this driver is suitable for this browser/device",
+            "itemtype": "method",
+            "name": "test",
+            "return": {
+                "description": "boolean"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 274,
+            "description": "Generate new Bucket.error object and fires the error event",
+            "itemtype": "method",
+            "name": "generateError",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "Bucket.error.TYPES constant.",
+                    "type": "String",
+                    "optional": true
+                },
+                {
+                    "name": "msg",
+                    "description": "the error massage we want to display.",
+                    "type": "String",
+                    "optional": true
+                },
+                {
+                    "name": "original_error",
+                    "description": "the original error object",
+                    "type": "Object",
+                    "optional": true
+                }
+            ],
+            "access": "protected",
+            "tagname": "",
+            "return": {
+                "description": "instance",
+                "type": "Bucket.error"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 292,
+            "description": "this method is intended to be used for initializing the timeout counter\nfor the request timeout error",
+            "itemtype": "method",
+            "name": "initTimeout",
+            "params": [
+                {
+                    "name": "cb",
+                    "description": "in case we want the timeout error to also trigger a callback",
+                    "type": "Function",
+                    "optional": true
+                },
+                {
+                    "name": "name",
+                    "description": "which method initiated the timeout",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "access": "protected",
+            "tagname": "",
+            "return": {
+                "description": "timeout handle",
+                "type": "Number"
+            },
+            "class": "Driver",
+            "module": "Driver"
+        },
+        {
+            "file": "src/Driver.js",
+            "line": 315,
+            "description": "this method is used to clear the timeout counter of a request timeout",
+            "itemtype": "method",
+            "name": "clearTimeout",
+            "params": [
+                {
+                    "name": "handle",
+                    "description": "the timeout handle"
+                }
+            ],
+            "access": "protected",
+            "tagname": "",
+            "class": "Driver",
+            "module": "Driver"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "Missing item type\nLogger Class.\nCreates a logger.",
+            "line": " src/common/Logger.js:69"
+        }
+    ]
+}
