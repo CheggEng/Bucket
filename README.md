@@ -17,7 +17,7 @@ var storage = new Bucket({
 });
 ```
 
-For an extended parameter list, see [http://cheggeng.github.com/Bucket/docs/index.html docs].
+For an extended parameter list, see [docs](http://cheggeng.github.com/Bucket/docs/index.html).
 
 By default, bucket chooses the 1st usable driver in it's list (if no driver list was provided to the constructor). This means
 that the easiest way to set application-wide driver prioritization is simply to control the order in which drivers are defined.
