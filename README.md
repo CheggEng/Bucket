@@ -29,7 +29,6 @@ the parameters.
 All methods are async, and always receive a callback as the last parameter.
 Bucket follows the Node.js pattern, where the 1st parameter of a callback is an error object (or `null` in case no error was generated).
 
-```
 ### Bucket.set
 
 ```js
