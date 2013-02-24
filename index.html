@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=640" />
+
+    <link rel="stylesheet" href="stylesheets/core.css" media="screen"/>
+    <link rel="stylesheet" href="stylesheets/mobile.css" media="handheld, only screen and (max-device-width:640px)"/>
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+
+    <script type="text/javascript" src="javascripts/modernizr.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="javascripts/headsmart.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#main_content').headsmart()
+      })
+    </script>
+    <title>Bucket by CheggEng</title>
+  </head>
+
+  <body>
+    <a id="forkme_banner" href="https://github.com/CheggEng/Bucket">View on GitHub</a>
+    <div class="shell">
+
+      <header>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <h1>Bucket</h1>
+            <h2>A Cross Browser javascript storage API</h2>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+      </header>
+
+      <section id="downloads">
+        <span class="inner">
+          <a href="https://github.com/CheggEng/Bucket/zipball/master" class="zip"><em>download</em> .ZIP</a><a href="https://github.com/CheggEng/Bucket/tarball/master" class="tgz"><em>download</em> .TGZ</a>
+        </span>
+      </section>
+
+
+      <span class="banner-fix"></span>
+
+
+      <section id="main_content">
+        <h1>Bucket.js</h1>
+
+<p>Bucket is a cross-browser client-side database solution. Bucket currently supports IndexedDB, WebSQL, and LocalStorage.
+Bucket was developed by Chegg ME team, and is used heavily in Chegg's eReader.</p>
+
+<p>Creating a bucket instance is dead-simple -</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">storage</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Bucket</span><span class="p">({</span>
+    <span class="nx">driver_options</span> <span class="o">:</span> <span class="p">{</span>
+        <span class="nx">table</span> <span class="o">:</span> <span class="s1">'foo'</span>
+    <span class="p">},</span>
+    <span class="nx">drivers</span> <span class="o">:</span> <span class="p">[</span><span class="s1">'IndexedDB'</span><span class="p">],</span>
+    <span class="nx">onLoad</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(){},</span>
+    <span class="nx">onError</span> <span class="o">:</span><span class="kd">function</span><span class="p">(){}</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>For an extended parameter list, see <a href="http://cheggeng.github.com/Bucket/docs/index.html">docs</a>.</p>
+
+<p>By default, bucket chooses the 1st usable driver in it's list (if no driver list was provided to the constructor). This means
+that the easiest way to set application-wide driver prioritization is simply to control the order in which drivers are defined.
+However, you can also specify which drivers you want the instance to use (and in which order) by specifying a driver list in
+the parameters.</p>
+
+<h2>Methods</h2>
+
+<p>All methods are async, and always receive a callback as the last parameter.
+Bucket follows the Node.js pattern, where the 1st parameter of a callback is an error object (or <code>null</code> in case no error was generated).</p>
+
+<h3>Bucket.set</h3>
+
+<div class="highlight"><pre><span class="c1">//singular</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span><span class="p">);</span>
+
+<span class="c1">//plural</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+    <span class="s1">'arieh'</span> <span class="o">:</span> <span class="s1">'glazer'</span><span class="p">,</span>
+    <span class="s1">'roded'</span> <span class="o">:</span> <span class="s1">'conforty'</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.get</h3>
+
+<div class="highlight"><pre><span class="c1">//singular</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">value</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">//plural</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="s1">'arieh'</span><span class="p">,</span><span class="s1">'roded'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">values</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span> <span class="c1">//{arieh:'glazer', roded:'conforty'}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.remove</h3>
+
+<div class="highlight"><pre><span class="c1">//singular</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">'a'</span><span class="p">);</span>
+
+<span class="c1">//plural</span>
+<span class="nx">storage</span><span class="p">.</span><span class="nx">remove</span><span class="p">([</span><span class="s1">'a'</span><span class="p">,</span><span class="s1">'arieh'</span><span class="p">]);</span>
+</pre></div>
+
+<h3>Bucket.exists</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">exists</span><span class="p">(</span><span class="s1">'arieh'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">ex</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">ex</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.each</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.getAll</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">getAll</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span><span class="nx">map</span><span class="p">){</span>
+    <span class="c1">//key value map</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.getKeys</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">getKeys</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">keys</span><span class="p">){</span>
+    <span class="c1">//array of keys</span>
+<span class="p">});</span>
+</pre></div>
+
+<h3>Bucket.getLength</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">getLength</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">len</span><span class="p">){});</span>
+</pre></div>
+
+<h3>Bucket.clear</h3>
+
+<div class="highlight"><pre><span class="nx">storage</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+</pre></div>
+      </section>
+
+      <footer>
+        <span class="ribbon-outer">
+          <span class="ribbon-inner">
+            <p>this project by <a href="https://github.com/CheggEng">CheggEng</a> can be found on <a href="https://github.com/CheggEng/Bucket">GitHub</a></p>
+          </span>
+          <span class="left-tail"></span>
+          <span class="right-tail"></span>
+        </span>
+        <p>Generated with <a href="http://pages.github.com">GitHub Pages</a> using Merlot</p>
+        <span class="octocat"></span>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
