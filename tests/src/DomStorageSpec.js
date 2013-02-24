@@ -45,6 +45,8 @@ describe("DomStorage", function () {
             cb && cb();
         };
 
+        tests.stubMethod = function() {};
+
         tests.clear();
 
     });

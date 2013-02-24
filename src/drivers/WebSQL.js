@@ -11,9 +11,24 @@ var Bucket = Bucket || {};
         name: 'WebSQL',
 
         query: function (opts) {
-            var db = this.db;
+            var db = this.db,
+                $this = this;
 
             this.addEvent('load', function(){
+                var timeout = $this.initTimeout(opts.onError),
+                    error  = opts.onError,
+                    success = opts.onSuccess;
+
+                opts.onSuccess = function(trans, res){
+                    $this.clearTimeout(timeout);
+                    success(trans,res);
+                };
+
+                opts.onError = function(e){
+                    $this.clearTimeout(timeout);
+                    error(e);
+                };
+
                 db.transaction(
                     function (trans) {
                         trans.executeSql(opts.sql, opts.sqlArgs, opts.onSuccess, opts.onError);
@@ -56,6 +71,7 @@ var Bucket = Bucket || {};
         },
 
         init: function (options) {
+            var timeout = this.initTimeout(null, 'init');
             // Database properties
             this.db_name = 'Bucket';
             this.table_name = this.options.db_name + '_' + this.options.table_name;
@@ -65,6 +81,7 @@ var Bucket = Bucket || {};
             this.logger.log('init');
 
             this.openDB(function (error) {
+                this.clearTimeout(timeout);
                 if (error === null) {
                     this.state = driver.STATES.CONNECTED;
                     this.logger.log('openDB success fireEvent load:latched');
@@ -72,6 +89,7 @@ var Bucket = Bucket || {};
                 } else {
                     this.state = driver.STATES.DISCONNECTED;
                     this.logger.log('openDB callback with error:', error);
+                    this.generateError(error);
                 }
             }.bind(this));
         },
@@ -341,6 +359,14 @@ var Bucket = Bucket || {};
             callback && this.fetchAllByRange(callback, {count: true});
 
             return this.$parent('getLength', arguments);
+        },
+
+        generateError : function(e){
+            if (e.name == 'Bucket Error'){
+                return e;
+            }
+
+            return this.$parent('generateError',[e]);
         },
 
         destroy: function () {
