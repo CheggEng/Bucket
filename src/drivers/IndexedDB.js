@@ -107,6 +107,7 @@ var Bucket = Bucket || {};
         },
 
         init: function () {
+            var timeout = this.initTimeout(null,'init');
             // Database properties
             this.db_name = this.options.db_name + "." + this.options.table_name;
             this.table_name = this.options.table_name;
@@ -120,6 +121,8 @@ var Bucket = Bucket || {};
             // Initiate connection to the indexedDB database;
             this.state = driver.STATES.CONNECTING;
             this.openDB(function (error) {
+                this.clearTimeout(timeout);
+
                 if (error === null) {
                     this.state = driver.STATES.CONNECTED;
                     this.logger.log('openDB success fireEvent load:latched');
@@ -127,6 +130,7 @@ var Bucket = Bucket || {};
                 } else {
                     this.state = driver.STATES.DISCONNECTED;
                     this.logger.log('openDB callback with error:', error);
+                    this.generateError(error);
                 }
             }.bind(this));
 
