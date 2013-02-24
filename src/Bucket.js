@@ -149,7 +149,7 @@ var Bucket = Bucket || {};
 
     /**
      * Default error
-     * @property QUOTA_ERR
+     * @property DEFAULT
      * @static
      * @const
      */
@@ -189,6 +189,14 @@ var Bucket = Bucket || {};
      * @const
      */
     Bucket.Error.NOT_FOUND_ERR = "NOTFOUND";
+
+    /**
+     * Timeout Error
+     * @property TIMEOUT
+     * @static
+     * @const
+     */
+    Bucket.Error.TIMEOUT = "TIMEOUT";
 
     this.Bucket = Bucket;
 }.apply(this, [Bucket, Bucket.utils]);

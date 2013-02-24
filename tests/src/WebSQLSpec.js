@@ -113,6 +113,19 @@ describe('WebSQL', function () {
             console.log('tests.clear');
         };
 
+        tests.stubMethod = function (name, driver) {
+            var old = driver.db.transaction;
+
+            driver.db.transaction = function(cb){
+                console.log('running stub for method '+name);
+            };
+
+            tests.cleanup.push(function(){
+                console.log('cleaning stub for method '+name);
+                driver.db.transaction = old;
+            });
+        };
+
         tests.clear();
     });
     tests.runTests();

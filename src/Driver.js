@@ -256,6 +256,21 @@ var Bucket = Bucket || {};
             return false;
         },
 
+        initTimeout : function(cb, name) {
+            var $this = this;
+
+            name = name ? name + ' ' : '';
+
+            return setTimeout(function(){
+                var err = $this.generateError(Bucket.Error.TIMEOUT, name + "Method timed out");
+                cb && cb(err);
+            }, this.options.timeout);
+        },
+
+        clearTimeout : function(handle){
+            clearTimeout(handle);
+        },
+
         /**
          * Generate new Bucket.error object, then fire the driver error event.
          * @param type {String} Bucket.error.TYPES constant.
@@ -274,7 +289,8 @@ var Bucket = Bucket || {};
         table_name: '',
         db_name: '',
         db_size: '',
-        fields: []
+        fields: [],
+        timeout : 5 * 1000
     };
 
     ns.Driver = Driver;
