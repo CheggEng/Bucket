@@ -6,7 +6,7 @@
         module.exports.Driver = factory(utils, Events);
 
     } else if (typeof define === 'function' && define.amd) {
-        define(['Bucket/common/utils', 'Events/Events'], function (utils, Events) {
+        define(['Bucket/common/utils', 'Bucket/common/Events'], function (utils, Events) {
             return factory(utils, Events.Events);
         });
 
