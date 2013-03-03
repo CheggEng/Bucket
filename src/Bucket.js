@@ -4,11 +4,11 @@
         var logger = require('Bucket/common/logger');
         var driver = require('Bucket/Driver');
 
-        module.exports.Bucket = factory(utils, logger, driver);
+        module.exports = factory(utils, logger, driver);
 
     } else if (typeof define === 'function' && define.amd) {
         define(['Bucket/common/utils', 'Bucket/common/Logger', 'Bucket/Driver'] ,function (utils, logger, driver) {
-            return {Bucket : factory(utils, logger, driver)};
+            return factory(utils, logger, driver);
         });
 
     } else {

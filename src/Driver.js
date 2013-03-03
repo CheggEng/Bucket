@@ -1,19 +1,20 @@
 (function (root, factory) {
     if (typeof exports === 'object') {
         var utils = require('Bucket/common/utils');
-        var Events = require('Events/Events').Events;
+        var Events = require('Bucket/common/Events').Events;
+        var Bucket = require('Bucket/Bucket');
 
-        module.exports.Driver = factory(utils, Events);
+        module.exports = factory(utils, Events, Bucket);
 
     } else if (typeof define === 'function' && define.amd) {
-        define(['Bucket/common/utils', 'Bucket/common/Events'], function (utils, Events) {
-            return factory(utils, Events.Events);
+        define(['Bucket/common/utils', 'Bucket/common/Events', 'Bucket/Bucket'], function (utils, Events, Bucket) {
+            return factory(utils, Events.Events, Bucket);
         });
 
     } else {
         root.Bucket.Driver = factory(root.Bucket.utils, root.Events);
     }
-}(this, function (utils, Events) {
+}(this, function (utils, Events, Bucket) {
     /**
      * @module Driver
      */
