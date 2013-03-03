@@ -1,4 +1,14 @@
-!function(){
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        module.exports.Events = factory();
+    } else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return {Events : factory()};
+        });
+    } else {
+        root.Events = factory();
+    }
+}(this, function (){
     /**
      * @module Events
      */
@@ -12,13 +22,9 @@
     //=================
 
     //utility function for cross-browser
-    function indexOf(arr, target){
-        var i, item;
-        if (arr.indexOf) return arr.indexOf(target);
-
-        for(i=0; item = arr[i]; i++) if (item == target) return i;
-
-        return -1;
+    function indexOf(arr,prop){
+        if (arr.indexOf) return arr.indexOf(prop);
+        else return String.prototype.indexOf(arr,prop);
     }
 
     //handles warnings set by the library
@@ -157,6 +163,8 @@
                 i, name;
 
             for (i=0; name = names[i]; i++) $this[name] = null;
+
+            this.$events_destroyed = true;
         });
     };
 
@@ -233,8 +241,8 @@
             obj.$event_element.addEventListener(type,fn,false);
         }else{
             if (!obj.$events[type]) obj.$events[type] = [fn];
-            else if (obj.$events[type].indexOf(fn)==-1){
-                obj.$evetns[type].push(fn);
+            else if (indexOf(obj.$events[type],fn)==-1){
+                obj.$events[type].push(fn);
             }
         }
     }
@@ -246,7 +254,9 @@
         if (compat){
             obj.$event_element.dispatchEvent(ev);
         }else{
-            for (i=0; fn = obj.$events[type]; i++){
+            if (!obj.$events[type]) return;
+
+            for (i=0; fn = obj.$events[type][i]; i++){
                 fn.apply(null,[ev]);
             }
         }
@@ -284,6 +294,8 @@
      * @chainable
      */
     addEvent = function addEvent(type,fn){
+        if (this.$events_destroyed) return this;
+
         var data = processType(type),
             pseudo_fn = Events.Pseudoes[data.pseudo] && Events.Pseudoes[data.pseudo].addEvent,
             args = this.$latched[data.name] && this.$latched[data.name].args,
@@ -313,6 +325,7 @@
      * @chainable
      */
     addEvents = function addEvents(events){
+        if (this.$events_destroyed) return this;
         var type;
 
         for (type in events) if (events.hasOwnProperty(type)){
@@ -333,6 +346,7 @@
      * @chainable
      */
     fireEvent = function fireEvent(type, args){
+        if (this.$events_destroyed) return this;
         var data = processType(type),
             pseudo_fn = Events.Pseudoes[data.pseudo] && Events.Pseudoes[data.pseudo].fireEvent,
             ev, fn,
@@ -372,12 +386,13 @@
      * @chainable
      */
     removeEvent = function removeEvent(type, fn,no_once){
+        if (this.$events_destroyed) return this;
         var data = processType(type),
             index;
 
         remove(this,data.name, fn);
 
-        if (!no_once && this.$once[data.name] && (index = this.$once[data.name].indexOf(fn))>-1){
+        if (!no_once && this.$once[data.name] && (index = indexOf(this.$once[data.name],fn))>-1){
             this.$once[data.name].splice(index,1);
         }
 
@@ -395,11 +410,12 @@
      * @chainable
      */
     addEventOnce = function addEventOnce(type, fn){
+        if (this.$events_destroyed) return this;
         var $this = this,
             data = processType(type);
 
         if (!this.$once[data.name]) this.$once[data.name] = [];
-        if (this.$once[data.name].indexOf(fn) == -1){
+        if (indexOf(this.$once[data.name],fn) == -1){
             this.$once[data.name].push(fn);
         }
 
@@ -417,6 +433,7 @@
      * @chainable
      */
     fireLatchedEvent = function fireLatchedEvent(type, args){
+        if (this.$events_destroyed) return this;
         if (!this.$latched) this.$latched = {};
 
         this.$latched[type] = {args : args};
@@ -426,6 +443,6 @@
     };     
 
     //expose Mixin to provided namespace
-    this.Events = Events;     
-}.call(this);
+    return Events;
+}));
 
