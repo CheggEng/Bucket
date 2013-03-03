@@ -1,10 +1,12 @@
-var Bucket = Bucket || {};
-
-(function () {
-
-    //
-    // --- Ployfills
-    //
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(function () {
+            factory();
+        });
+    } else {
+        factory();
+    }
+}(this, function (){
     Array.isArray = Array.isArray ||
         function (arg) {
             return Object.prototype.toString.call(arg) === "[object Array]";
@@ -15,7 +17,7 @@ var Bucket = Bucket || {};
             for (var i = 0, len = this.length; i < len; ++i) {
                 fn.call(scope || this, this[i], i, this);
             }
-        }
+        };
 
     Object.keys = Object.keys ||
         (function () {
@@ -32,7 +34,7 @@ var Bucket = Bucket || {};
                 ];
 
             return function (obj) {
-                var result = []
+                var result = [];
 
                 if (typeof obj !== 'object' && typeof obj !== 'function' || obj === null) {
                     throw new TypeError('Object.keys called on non-object');
@@ -56,4 +58,4 @@ var Bucket = Bucket || {};
             }
         })();
 
-}).apply(Bucket);
+}));

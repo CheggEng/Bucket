@@ -1,12 +1,22 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object'){
+        var Bucket = require('Bucket/Bucket');
 
-!function (ns, utils) {
+        module.exports = factory(Bucket);
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/Bucket'], function (Bucket) {
+            return factory(Bucket);
+        });
+    } else {
+        factory(root.Bucket);
+    }
+}(this, function (Bucket) {
 
     /**
      * @module Driver.DomStorage
      */
 
-    var logger = ns.Logger.getLogger("LocalStorage", ns.Logger.logLevels.ERROR),
+    var logger = Bucket.Logger.getLogger("LocalStorage", Bucket.Logger.logLevels.ERROR),
         driver;
 
     /**
@@ -187,4 +197,4 @@ var Bucket = Bucket || {};
     Bucket.alias("DomStorage", "LocalStorage");
 
     driver.stores = {};
-}.apply(Bucket, [Bucket, Bucket.utils]);
+}));

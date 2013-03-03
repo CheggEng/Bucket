@@ -1,6 +1,20 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        var utils = require('Bucket/common/utils');
+        var logger = require('Bucket/common/logger');
+        var driver = require('Bucket/Driver');
 
-!function (ns, utils) {
+        module.exports.Bucket = factory(utils, logger, driver);
+
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/common/utils', 'Bucket/common/Logger', 'Bucket/Driver'] ,function (utils, logger, driver) {
+            return {Bucket : factory(utils, driver)};
+        });
+
+    } else {
+        root.Bucket = factory(Bucket.utils, Bucket.Logger, Bucket.Driver);
+    }
+}(this, function (utils, Logger, Driver) {
     /**
      * @module Bucket
      */
@@ -19,8 +33,6 @@ var Bucket = Bucket || {};
         var driver = Bucket.choose(options.drivers);
         return new driver(options.driver_options);
     }
-
-    utils.merge(Bucket, ns);
 
     /**
      * a stack of all registered driver names
@@ -103,9 +115,9 @@ var Bucket = Bucket || {};
             throw "Driver must always have a test method";
         }
 
-        params.defaultOptions = utils.merge(ns.Driver.defaultOptions, params.defaultOptions || {});
+        params.defaultOptions = utils.merge(Driver.defaultOptions, params.defaultOptions || {});
 
-        d = utils.inherit(driver, ns.Driver, params);
+        d = utils.inherit(driver, Driver, params);
         d.test = params.test;
         d.$name = name;
 
@@ -214,5 +226,9 @@ var Bucket = Bucket || {};
      */
     Bucket.Error.TIMEOUT = "TIMEOUT";
 
-    this.Bucket = Bucket;
-}.apply(this, [Bucket, Bucket.utils]);
+    Bucket.utils = utils;
+    Bucket.Logger = Logger;
+    Bucket.Driver = Driver;
+
+    return Bucket;
+}));

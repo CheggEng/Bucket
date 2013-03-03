@@ -1,6 +1,16 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object'){
+        var Bucket = require('Bucket/Bucket');
 
-!function (ns, utils) {
+        module.exports = factory(Bucket);
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/Bucket'], function (Bucket) {
+            return factory(Bucket);
+        });
+    } else {
+        factory(root.Bucket);
+    }
+}(this, function (Bucket) {
     /**
      * @module Driver.IndexedDB
      */
@@ -624,5 +634,4 @@ var Bucket = Bucket || {};
     driver.ERROR_MAP[DOMException.NOT_ALLOWED_ERR] = Bucket.Error.PERMISSION_ERR;
     driver.ERROR_MAP[DOMException.READ_ONLY_ERR] = Bucket.Error.PERMISSION_ERR;
     driver.ERROR_MAP[DOMException.QUOTA_ERR] = Bucket.Error.QUOTA_ERR;
-
-}.apply(Bucket, [Bucket, Bucket.utils]);
+}));

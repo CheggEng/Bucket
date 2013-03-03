@@ -1,6 +1,19 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        var utils = require('Bucket/common/utils');
+        var Events = require('Events/Events').Events;
 
-!function (ns, utils) {
+        module.exports.Driver = factory(utils, Events);
+
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/common/utils', 'Events/Events'], function (utils, Events) {
+            return {Logger : factory(utils, Events.Events)};
+        });
+
+    } else {
+        root.Bucket.Driver = factory(root.Bucket.utils, root.Events);
+    }
+}(this, function (utils, Events) {
     /**
      * @module Driver
      */
@@ -325,5 +338,7 @@ var Bucket = Bucket || {};
         }
     };
 
-    ns.Driver = Driver;
-}.apply(Bucket, [Bucket, Bucket.utils]);
+    Bucket.Driver = Driver;
+
+    return Driver;
+}));

@@ -1,6 +1,17 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        module.exports.Logger = factory();
 
-(function(ns){
+    } else if (typeof define === 'function' && define.amd) {
+        define(function () {
+            return {Logger : factory()};
+        });
+
+    } else {
+        root.Bucket = root.Bucket || {};
+        root.Bucket.Logger = factory();
+    }
+}(this, function () {
 
     var logMethods = ["assert", "error", "warn", "info", "log"],
         loggers = {},
@@ -114,6 +125,7 @@ var Bucket = Bucket || {};
         INFO: 3,
         DEBUG: 4
     };
+
     Logger.prototype.setLevel = function(level) {
         var i = 0;
 
@@ -155,6 +167,5 @@ var Bucket = Bucket || {};
         }
     };
 
-    ns.Logger = Logger;
-
-}).apply(Bucket, [Bucket]);
+    return Logger;
+}));

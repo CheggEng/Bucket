@@ -1,14 +1,23 @@
-var Bucket = Bucket || {};
-Bucket.utils = Bucket.utils || {};
-
-!function (ns, utils) {
+(function (root, factory) {
+    if (typeof exports === 'object') {
+        module.exports = factory();
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/common/polyfills'], function () {
+            return factory();
+        });
+    } else {
+        root.Bucket = root.Bucket || {};
+        root.Bucket.utils = factory();
+    }
+}(this, function () {
+    var utils = {};
 
     /**
      * generates a bound function collection, using an object's bind array propery
      * @class utils.Bind
      * @constructor
      */
-    this.Bind = function () {
+    utils.Bind = function () {
         var i, fn;
 
         /**
@@ -34,7 +43,7 @@ Bucket.utils = Bucket.utils || {};
      *  @constructor
      *
      */
-    this.Options = function Options() {
+    utils.Options = function Options() {
         var key;
         this.options = {};
 
@@ -77,7 +86,7 @@ Bucket.utils = Bucket.utils || {};
      *
      * @return {Object} new merged object
      */
-    this.Options.setOptions = function (defaults, options) {
+    utils.Options.setOptions = function (defaults, options) {
         var opts = {}, key;
 
         for (key in defaults) if (options[key]) {
@@ -95,7 +104,7 @@ Bucket.utils = Bucket.utils || {};
     }
 
     // mimickin corc's Object.create
-    this.inherit = function (obj, parent, props) {
+    utils.inherit = function (obj, parent, props) {
         var key;
 
         function F() {
@@ -128,11 +137,11 @@ Bucket.utils = Bucket.utils || {};
      * @static
      *
      * @param {object} target
-     * @param {object} [obj]  an object to merge (can be an infinite list of objects)
+     * @param {object} [target]  an object to merge (can be an infinite list of objects)
      *
      * @return {object} merged object
      */
-    this.merge = function(target /*, obj1 [,obj2 [,obj3 ...]]*/){
+    utils.merge = function(target /*, obj1 [,obj2 [,obj3 ...]]*/){
         var objects = [].slice.call(arguments, 1), i, object, key;
 
         for (i=0; object = objects[i]; i++){
@@ -145,7 +154,9 @@ Bucket.utils = Bucket.utils || {};
     };
 
 
-    this.toArray = function(prop){
+    utils.toArray = function(prop){
         return prop instanceof Array ? prop : [prop];
     };
-}.apply(Bucket.utils, [Bucket, Bucket.utils]);
+
+    return utils;
+}));

@@ -1,11 +1,21 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object'){
+        var Bucket = require('Bucket/Bucket');
 
-!function (ns, utils) {
+        module.exports = factory(Bucket);
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/Bucket'], function (Bucket) {
+            return factory(Bucket);
+        });
+    } else {
+        factory(root.Bucket);
+    }
+}(this, function (Bucket) {
     /**
      * @module Driver.Template
      */
 
-    var logger = ns.Logger.getLogger("Template", ns.Logger.logLevels.ERROR),
+    var logger = Bucket.Logger.getLogger("Template", Bucket.Logger.logLevels.ERROR),
         driver;
 
     driver = Bucket.registerDriver('Template', {
@@ -101,4 +111,4 @@ var Bucket = Bucket || {};
             // delete any local var or close db connection
         }
     });
-}.apply(Bucket, [Bucket, Bucket.utils]);
+}));

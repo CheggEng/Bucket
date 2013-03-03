@@ -1,6 +1,16 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object'){
+        var Bucket = require('Bucket/Bucket');
 
-!function (ns, utils) {
+        module.exports = factory(Bucket);
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/Bucket'], function (Bucket) {
+            return factory(Bucket);
+        });
+    } else {
+        factory(root.Bucket);
+    }
+}(this, function (Bucket) {
     /**
      * @module Driver.WebSQL
      */
@@ -94,7 +104,7 @@ var Bucket = Bucket || {};
             this.table_name = this.options.db_name + '_' + this.options.table_name;
 
             // Init instance's logger
-            this.logger = ns.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, ns.Logger.logLevels.ERROR);
+            this.logger = Bucket.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, Bucket.Logger.logLevels.ERROR);
             this.logger.log('init');
 
             this.openDB(function (error) {
@@ -390,4 +400,4 @@ var Bucket = Bucket || {};
         CONNECTED: 2
     };
 
-}.apply(Bucket, [Bucket, Bucket.utils]);
+}));
