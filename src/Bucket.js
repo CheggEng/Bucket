@@ -8,7 +8,7 @@
 
     } else if (typeof define === 'function' && define.amd) {
         define(['Bucket/common/utils', 'Bucket/common/Logger', 'Bucket/Driver'] ,function (utils, logger, driver) {
-            return {Bucket : factory(utils, driver)};
+            return {Bucket : factory(utils, logger, driver)};
         });
 
     } else {

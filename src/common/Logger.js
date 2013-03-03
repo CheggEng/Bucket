@@ -4,7 +4,7 @@
 
     } else if (typeof define === 'function' && define.amd) {
         define(function () {
-            return {Logger : factory()};
+            return factory();
         });
 
     } else {

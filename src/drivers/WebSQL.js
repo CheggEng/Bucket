@@ -2,10 +2,10 @@
     if (typeof exports === 'object'){
         var Bucket = require('Bucket/Bucket');
 
-        module.exports = factory(Bucket);
+        module.exports = factory(Bucket.Bucket);
     } else if (typeof define === 'function' && define.amd) {
         define(['Bucket/Bucket'], function (Bucket) {
-            return factory(Bucket);
+            return factory(Bucket.Bucket);
         });
     } else {
         factory(root.Bucket);

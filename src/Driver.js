@@ -7,7 +7,7 @@
 
     } else if (typeof define === 'function' && define.amd) {
         define(['Bucket/common/utils', 'Events/Events'], function (utils, Events) {
-            return {Logger : factory(utils, Events.Events)};
+            return factory(utils, Events.Events);
         });
 
     } else {
@@ -337,8 +337,6 @@
             clearTimeout(handle);
         }
     };
-
-    Bucket.Driver = Driver;
 
     return Driver;
 }));
