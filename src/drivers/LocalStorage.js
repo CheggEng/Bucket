@@ -3,21 +3,20 @@ var Bucket = Bucket || {};
 !function (ns, utils) {
 
     /**
-     * @module Driver.LocalStorage
+     * @module Driver.DomStorage
      */
 
     var logger = ns.Logger.getLogger("LocalStorage", ns.Logger.logLevels.ERROR),
         driver;
 
     /**
-     * @class Driver.LocalStorage
-     *
      * @constructor
+     * @class Driver.DomStorage
      * @extends Driver
      **/
     driver = Bucket.registerDriver('LocalStorage', {
 
-        name: 'LocalStorage',
+        name: 'DomStorage',
 
         init: function () {
             var keys;
@@ -184,8 +183,8 @@ var Bucket = Bucket || {};
             return this.$parent('destroy');
         }
     });
-    
-    Bucket.alias("LocalStorage", "DomStorage");
+
+    Bucket.alias("DomStorage", "LocalStorage");
 
     driver.stores = {};
 }.apply(Bucket, [Bucket, Bucket.utils]);
