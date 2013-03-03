@@ -2,19 +2,19 @@
     if (typeof exports === 'object') {
         var utils = require('Bucket/common/utils');
         var Events = require('Bucket/common/Events').Events;
-        var Bucket = require('Bucket/Bucket');
+        var Bucket = require('Bucket/Error');
 
-        module.exports = factory(utils, Events, Bucket);
+        module.exports = factory(utils, Events, Error);
 
     } else if (typeof define === 'function' && define.amd) {
-        define(['Bucket/common/utils', 'Bucket/common/Events', 'Bucket/Bucket'], function (utils, Events, Bucket) {
-            return factory(utils, Events.Events, Bucket);
+        define(['Bucket/common/utils', 'Bucket/common/Events','Bucket/Error'], function (utils, Events, Error) {
+            return factory(utils, Events.Events, Error);
         });
 
     } else {
         root.Bucket.Driver = factory(root.Bucket.utils, root.Events);
     }
-}(this, function (utils, Events, Bucket) {
+}(this, function (utils, Events, Error) {
     /**
      * @module Driver
      */
@@ -298,7 +298,7 @@
          * @return {Bucket.error} instance
          */
         generateError: function (type, msg, original_error) {
-            var err = new Bucket.Error(type || Bucket.Error.DEFAULT_ERR, msg || 'Default Error Massage', original_error);
+            var err = new Error(type || Error.DEFAULT_ERR, msg || 'Default Error Massage', original_error);
             this.fireEvent('error', {error: err});
             return err;
         },
@@ -321,7 +321,7 @@
             name = name ? name + ' ' : '';
 
             return setTimeout(function(){
-                var err = $this.generateError(Bucket.Error.TIMEOUT, name + "Method timed out");
+                var err = $this.generateError(Error.TIMEOUT, name + "Method timed out");
                 cb && cb(err);
             }, this.options.timeout);
         },

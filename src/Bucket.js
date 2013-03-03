@@ -3,18 +3,19 @@
         var utils = require('Bucket/common/utils');
         var logger = require('Bucket/common/logger');
         var driver = require('Bucket/Driver');
+        var Error = require('Bucket/Error');
 
-        module.exports = factory(utils, logger, driver);
+        module.exports = factory(utils, logger, driver, Error);
 
     } else if (typeof define === 'function' && define.amd) {
-        define(['Bucket/common/utils', 'Bucket/common/Logger', 'Bucket/Driver'] ,function (utils, logger, driver) {
-            return factory(utils, logger, driver);
+        define(['Bucket/common/utils', 'Bucket/common/Logger', 'Bucket/Driver', 'Bucket/Error'] ,function (utils, logger, driver, Error) {
+            return factory(utils, logger, driver, Error);
         });
 
     } else {
-        root.Bucket = factory(Bucket.utils, Bucket.Logger, Bucket.Driver);
+        root.Bucket = factory(Bucket.utils, Bucket.Logger, Bucket.Driver, Bucket.Error);
     }
-}(this, function (utils, Logger, Driver) {
+}(this, function (utils, Logger, Driver, Error) {
     /**
      * @module Bucket
      */
@@ -145,90 +146,12 @@
         return Bucket.drivers[alias];
     };
 
-    /**
-     * @class Bucket.Error
-     * @constructor
-     * @extends Error
-     */
-    Bucket.Error = function (type, msg, original_error) {
-        this.name = 'Bucket Error';
-        this.type = type;
-        this.message = msg;
-        this.original = original_error;
-    };
 
-    Bucket.Error.prototype = new Error();
-    Bucket.Error.prototype.constructor = Bucket.Error;
-    Bucket.Error.prototype.toString = function () {
-        return this.type + " " + this.name + " " + this.message;
-    };
-
-    /**
-     * Default error
-     * @property DEFAULT
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.DEFAULT_ERR = "DEFAULT";
-
-    /**
-     * Signifies an error that happened due to database size limit overflow
-     * @property QUOTA_ERR
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.QUOTA_ERR = "QUOTA";
-
-    /**
-     * Signifies an error that happened due to an action that was not permitted
-     *
-     * @property PERMISSION_ERR
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.PERMISSION_ERR = "PERMISSION";
-
-    /**
-     * Signifies an error that happened due to an action that violated DB constraints
-     *
-     * @property CONSTRAINT_ERR
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.CONSTRAINT_ERR = "CONSTRAINT";
-
-    /**
-     * Signifies an error that happened due to a missing table, objectStore;
-     *
-     * @property NOTFOUND_ERR
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.NOT_FOUND_ERR = "NOTFOUND";
-
-    /**
-     * Timeout Error
-     * @property TIMEOUT
-     * @type {String}
-     * @readOnly
-     * @static
-     * @final
-     */
-    Bucket.Error.TIMEOUT = "TIMEOUT";
 
     Bucket.utils = utils;
     Bucket.Logger = Logger;
     Bucket.Driver = Driver;
+    Bucket.Error = Error;
 
     return Bucket;
 }));
