@@ -116,8 +116,6 @@
             throw "Driver must always have a test method";
         }
 
-        params.defaultOptions = utils.merge(Driver.defaultOptions, params.defaultOptions || {});
-
         d = utils.inherit(driver, Driver, params);
         d.test = params.test;
         d.$name = name;
