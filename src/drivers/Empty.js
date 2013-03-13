@@ -5,11 +5,11 @@ var Bucket = Bucket || {};
      * @module Driver.Template
      */
 
-    var logger = ns.Logger.getLogger("Template", ns.Logger.logLevels.ERROR),
+    var logger = ns.Logger.getLogger("Empty", ns.Logger.logLevels.ERROR),
         driver;
 
-    Bucket.registerDriver('Template', {
-        name: 'Template',
+    Bucket.registerDriver('Empty', {
+        name: 'Empty',
 
         init: function (options) {
             this.store = {};
