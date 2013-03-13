@@ -148,8 +148,6 @@ var Bucket = Bucket || {};
             } catch ( e ) {
                 err = this.generateError(Bucket.Error.QUOTA_ERR, "LocalStorage exceeded quota", e);
 
-                this.remove(keys);
-
                 callback && callback(err);
             }
             return this.$parent('set', arguments);
