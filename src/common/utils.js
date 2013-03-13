@@ -1,16 +1,19 @@
 (function (root, factory) {
     if (typeof exports === 'object') {
-        module.exports = factory();
+        var Events = require('Bucket/common/Events');
+        module.exports = factory(Events);
     } else if (typeof define === 'function' && define.amd) {
-        define(['Bucket/common/polyfills'], function () {
-            return factory();
+        define(['Bucket/common/Events', 'Bucket/common/polyfills'], function (Events) {
+            return factory(Events);
         });
     } else {
         root.Bucket = root.Bucket || {};
-        root.Bucket.utils = factory();
+        root.Bucket.utils = factory(root.Events);
     }
-}(this, function () {
+}(this, function (Events) {
     var utils = {};
+
+    utils.Events = Events;
 
     /**
      * generates a bound function collection, using an object's bind array propery
@@ -61,7 +64,7 @@
             if (typeof options !== 'object' || options === null) return;
             for (key in options) if (options.hasOwnProperty(key)) {
                 if (key in this.options) this.options[key] = options[key];
-                if (/^on[A-Z][a-zA-Z]+/.test(key) && this.addEvent && typeof options[key] == 'function') this.addEvent(utils.Events.removeOn(key), options[key]);
+                if (/^on[A-Z][a-zA-Z]+/.test(key) && this.addEvent && typeof options[key] == 'function') this.addEvent(Events.removeOn(key), options[key]);
             }
 
             return this;
