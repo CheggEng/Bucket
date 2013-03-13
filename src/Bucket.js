@@ -17,6 +17,9 @@ var Bucket = Bucket || {};
      */
     function Bucket(options) {
         var driver = Bucket.choose(options.drivers);
+
+        if (!driver) return false;
+
         return new driver(options.driver_options);
     }
 
