@@ -106,8 +106,6 @@ var Bucket = Bucket || {};
             throw "Driver must always have a test method";
         }
 
-        params.defaultOptions = utils.merge(ns.Driver.defaultOptions, params.defaultOptions || {});
-
         d = utils.inherit(driver, ns.Driver, params);
         d.test = params.test;
         d.$name = name;
