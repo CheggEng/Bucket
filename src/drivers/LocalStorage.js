@@ -34,6 +34,8 @@
             // Set the prefix for this storage
             this.prefix = this.options.db_name + '_' + this.options.table_name + '_';
 
+            this.size = 0;
+
             // Init the internal store object
             if (!driver.stores[this.prefix]) {
                 driver.stores[this.prefix] = {};
@@ -46,6 +48,9 @@
             keys.forEach(function (key) {
                 if (key.indexOf(this.prefix) !== -1) {
                     this.store[key.substr(this.prefix.length)] = JSON.parse(localStorage[key]);
+
+                    this.size += key.length;
+                    this.size += localStorage[key].length;
                 }
             }.bind(this));
 
@@ -59,6 +64,8 @@
             for (key in this.store) {
                 localStorage.removeItem(this.prefix + key);
             }
+
+            this.size = 0;
 
             // Clear local storage
             this.store = driver.stores[this.options.table_name] = {};
@@ -122,7 +129,11 @@
             var keys = utils.toArray(key);
 
             keys.forEach(function (element) {
+                this.size -= localStorage.getItem(this.prefix + element).length;
+                this.size -= (this.prefix + element).length;
+
                 localStorage.removeItem(this.prefix + element);
+
                 delete this.store[element];
             }.bind(this));
 
@@ -132,7 +143,7 @@
         },
 
         set: function (key, value, callback) {
-            var map, keys = [], prop, err;
+            var map, keys = [], prop, err, json;
 
             if (typeof key == 'string' || typeof key == 'number') {
                 map = {};
@@ -149,14 +160,20 @@
             try {
                 for (prop in map) {
                     logger.log('set String: ', this.prefix + prop, '=' + map[prop]);
-                    localStorage.setItem(this.prefix + prop, JSON.stringify(map[prop]));
+
+                    json = JSON.stringify(map[prop]);
+                    localStorage.setItem(this.prefix + prop, json);
+
+                    this.size += json.length;
+                    this.size += ( this.prefix + prop ).length;
+
                     this.store[prop] = map[prop];
                     keys.push(prop);
                 }
 
                 callback && callback(null);
             } catch ( e ) {
-                err = this.generateError(Bucket.Error.QUOTA_ERR, "LocalStorage exceeded quota", e);
+                err = this.generateError(e);
 
                 callback && callback(err);
             }
@@ -164,26 +181,25 @@
         },
 
         test: function () {
-            return !!localStorage && function () {
-                // in mobile safari if safe browsing is enabled, window.storage
-                // is defined but setItem calls throw exceptions.
-                var success = true,
-                    value = Math.random();
-                try {
-                    localStorage.setItem(value, value);
-                    localStorage.removeItem(value);
-                } catch (e) {
-                    success = false;
-                }
-
-                return success;
-            }();
+            return !!localStorage;
         },
 
         getLength: function (cb) {
             cb(null, Object.keys(this.store).length);
 
             return this.$parent('getLength', arguments);
+        },
+
+        generateError : function(e){
+            var msg;
+            if (e.message && /(QUOTA)[\w\W]+(EXCEEDED)/i.test(e.message)) {
+                msg = 'Local Storage Quota Exceeded Error. ';
+                msg += 'Storage string length: ' + this.size;
+
+                return this.$parent('generateError', [Bucket.Error.QUOTA_ERR, msg, e]);
+            }else {
+                return this.$parent('generateError',arguments);
+            }
         },
 
         destroy: function () {
