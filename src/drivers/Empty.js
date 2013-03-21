@@ -1,23 +1,34 @@
-var Bucket = Bucket || {};
+(function (root, factory) {
+    if (typeof exports === 'object'){
+        var Bucket = require('Bucket/Bucket');
 
-!function (ns, utils) {
+        module.exports = factory(Bucket);
+    } else if (typeof define === 'function' && define.amd) {
+        define(['Bucket/Bucket'], function (Bucket) {
+            return factory(Bucket);
+        });
+    } else {
+        factory(root.Bucket);
+    }
+}(this, function (Bucket) {
     /**
      * @module Driver.Template
      */
 
-    var logger = ns.Logger.getLogger("Empty", ns.Logger.logLevels.ERROR),
-        driver;
+    var driver;
 
-    Bucket.registerDriver('Empty', {
+    driver = Bucket.registerDriver('Empty', {
         name: 'Empty',
 
         init: function (options) {
             this.store = {};
             this.fireEvent('load:latched');
+            
+            this.logger = Bucket.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, Bucket.Logger.logLevels.ERROR);
         },
 
         clear: function (callback) {
-            logger.log('clear');
+            this.logger.log('clear');
             this.store = {};
             callback && callback(null);
 
@@ -25,7 +36,7 @@ var Bucket = Bucket || {};
         },
 
         each: function (callback) {
-            logger.log('each');
+            this.logger.log('each');
 
             var key;
 
@@ -37,7 +48,7 @@ var Bucket = Bucket || {};
         },
 
         exists: function (key, callback) {
-            logger.log('exists');
+            this.logger.log('exists');
 
             callback(null, (key in this.store));
 
@@ -45,7 +56,7 @@ var Bucket = Bucket || {};
         },
 
         get: function (key, callback) {
-            logger.log('get');
+            this.logger.log('get');
 
             var result, k;
 
@@ -65,7 +76,7 @@ var Bucket = Bucket || {};
         },
 
         getAll: function (callback) {
-            logger.log('getAll');
+            this.logger.log('getAll');
 
             callback(null, this.store);
 
@@ -73,7 +84,7 @@ var Bucket = Bucket || {};
         },
 
         getKeys: function (callback) {
-            logger.log('getKeys');
+            this.logger.log('getKeys');
 
             callback(null, Object.keys(this.store));
 
@@ -109,4 +120,4 @@ var Bucket = Bucket || {};
             this.store = {};
         }
     });
-}.apply(Bucket, [Bucket, Bucket.utils]);
+}));

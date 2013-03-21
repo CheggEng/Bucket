@@ -16,8 +16,7 @@
      * @module Driver.DomStorage
      */
 
-    var logger = Bucket.Logger.getLogger("LocalStorage", Bucket.Logger.logLevels.ERROR),
-        driver;
+    var driver;
 
     /**
      * @constructor
@@ -31,6 +30,8 @@
         init: function () {
             var keys;
 
+            this.logger = Bucket.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, Bucket.Logger.logLevels.ERROR);
+            
             // Set the prefix for this storage
             this.prefix = this.options.db_name + '_' + this.options.table_name + '_';
 
@@ -58,7 +59,7 @@
         },
 
         clear: function (callback) {
-            logger.log('clear');
+            this.logger.log('clear');
 
             var key;
             for (key in this.store) {
@@ -76,7 +77,7 @@
         },
 
         each: function (callback) {
-            logger.log('each');
+            this.logger.log('each');
             var keys;
 
             // Extract all the keys from the local storage
@@ -90,13 +91,13 @@
         },
 
         exists: function (key, callback) {
-            logger.log('exists');
+            this.logger.log('exists');
             callback(null, key in this.store);
             return this.$parent('exists', arguments);
         },
 
         get: function (key, callback) {
-            logger.log('get');
+            this.logger.log('get');
             var values = {};
 
             // check to see if the first argument is String or array
@@ -113,13 +114,13 @@
         },
 
         getAll: function (callback) {
-            logger.log('getAll');
+            this.logger.log('getAll');
             callback(null, this.store);
             return this.$parent('getAll', arguments);
         },
 
         getKeys: function (callback) {
-            logger.log('getKeys');
+            this.logger.log('getKeys');
             callback(null, Object.keys(this.store));
 
             return this.$parent('getKeys', arguments);
@@ -159,7 +160,7 @@
 
             try {
                 for (prop in map) {
-                    logger.log('set String: ', this.prefix + prop, '=' + map[prop]);
+                    this.logger.log('set String: ', this.prefix + prop, '=' + map[prop]);
 
                     json = JSON.stringify(map[prop]);
                     localStorage.setItem(this.prefix + prop, json);
