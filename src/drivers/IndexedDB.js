@@ -123,7 +123,7 @@
             this.table_name = this.options.table_name;
             
             // Init instance's logger
-            this.logger = ns.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, ns.Logger.logLevels.ERROR);
+            this.logger = Bromine.Logger.getLogger(this.name + " " + this.db_name + "_" + this.table_name, Bucket.Logger.logLevels.ERROR);
             this.logger.log('init');
 
             this.wrapMethods();
