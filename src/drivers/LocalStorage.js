@@ -127,7 +127,7 @@
         },
 
         remove: function (key, callback) {
-            var keys = utils.toArray(key);
+            var keys = Bucket.utils.toArray(key);
 
             keys.forEach(function (element) {
                 this.size -= localStorage.getItem(this.prefix + element).length;
