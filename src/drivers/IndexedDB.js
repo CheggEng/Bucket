@@ -535,11 +535,7 @@
             if(/firefox/.test(navigator.userAgent.toLowerCase())){
                 result = result && (16 <= parseInt(navigator.userAgent.toLowerCase().match(/firefox\/(\d*)/)[1]));
             }
-            
-            if(window.webkitIndexedDB){
-                result = false;
-            }
-            
+
             return result;
         },
 
