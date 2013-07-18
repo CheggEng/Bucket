@@ -127,20 +127,38 @@
         },
 
         remove: function (key, callback) {
-            var keys = Bucket.utils.toArray(key);
+            var keys;
 
-            keys.forEach(function (element) {
-                this.size -= localStorage.getItem(this.prefix + element).length;
-                this.size -= (this.prefix + element).length;
+            if (!key) return;
 
-                localStorage.removeItem(this.prefix + element);
+            keys = Bucket.utils.toArray(key);
 
-                delete this.store[element];
-            }.bind(this));
+            try {
+                keys.forEach(function (element) {
+                    var key = this.prefix+element,
+                        item = localStorage.getItem(key);
 
-            callback && callback(null);
+                    if (!item && this.store[element]){
+                        item = JSON.stringify(this.store[element]);
+                    }
 
-            return this.$parent('remove', arguments);
+                    delete this.store[element];
+
+                    if (!item) return;
+
+                    this.size -= item.length;
+                    this.size -= item.length;
+
+                    localStorage.removeItem(key);
+                }.bind(this));
+
+                callback && callback(null);
+
+                return this.$parent('remove', arguments);
+            }catch(e){
+                e = this.generateError(e);
+                callback && callback(e);
+            }
         },
 
         set: function (key, value, callback) {
